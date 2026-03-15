@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls /Users/plu/Documents/phongnlu09212023/ai/ai_news/.env*)",
+      "Bash(source ~/.nvm/nvm.sh)",
+      "Bash(nvm use:*)",
+      "Bash(node scripts/seed.mjs)"
+    ]
+  }
+}
