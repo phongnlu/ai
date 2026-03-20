@@ -24,16 +24,22 @@ export async function GET(req: NextRequest): Promise<NextResponse<FeedResponse>>
 
   let articles = loadArticles();
 
-  if (category && category !== 'all') {
-    articles = articles.filter((a) => a.category === category);
-  }
-
   if (q) {
     articles = articles.filter(
       (a) =>
         a.title.toLowerCase().includes(q) ||
         a.summary.toLowerCase().includes(q)
     );
+  }
+
+  // Compute per-category counts after search filter, before category filter
+  const categoryCounts: Record<string, number> = { all: articles.length };
+  for (const a of articles) {
+    categoryCounts[a.category] = (categoryCounts[a.category] ?? 0) + 1;
+  }
+
+  if (category && category !== 'all') {
+    articles = articles.filter((a) => a.category === category);
   }
 
   if (sort === 'latest') {
@@ -52,5 +58,6 @@ export async function GET(req: NextRequest): Promise<NextResponse<FeedResponse>>
     page,
     pageSize,
     hasMore: start + pageSize < total,
+    categoryCounts,
   });
 }

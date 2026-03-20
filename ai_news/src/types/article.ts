@@ -19,4 +19,5 @@ export interface FeedResponse {
   page: number;
   pageSize: number;
   hasMore: boolean;
+  categoryCounts: Record<string, number>;
 }

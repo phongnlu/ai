@@ -1,5 +1,5 @@
 'use client';
-import { useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 interface SearchBarProps {
   value: string;
@@ -8,10 +8,15 @@ interface SearchBarProps {
 }
 
 export default function SearchBar({ value, onChange, onClear }: SearchBarProps) {
+  const [inputValue, setInputValue] = useState(value);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Sync input when parent clears or changes value externally
+  useEffect(() => { setInputValue(value); }, [value]);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value;
+    setInputValue(v);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => onChange(v), 300);
   };
@@ -27,7 +32,7 @@ export default function SearchBar({ value, onChange, onClear }: SearchBarProps) 
         type="search"
         role="searchbox"
         aria-label="Search articles"
-        defaultValue={value}
+        value={inputValue}
         onChange={handleInput}
         placeholder="Search AI news..."
         className="w-full pl-9 pr-8 py-2 text-sm bg-gray-100 dark:bg-gray-700 border border-transparent focus:border-blue-500 rounded-lg outline-none transition-colors"

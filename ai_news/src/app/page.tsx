@@ -13,6 +13,7 @@ interface ToastState { message: string; type: 'success' | 'info' | 'error'; id: 
 export default function HomePage() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [total, setTotal] = useState(0);
+  const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -33,6 +34,7 @@ export default function HomePage() {
       setArticles((prev) => append ? [...prev, ...data.articles] : data.articles);
       setTotal(data.total);
       setHasMore(data.hasMore);
+      if (!append) setCategoryCounts(data.categoryCounts);
     } finally {
       append ? setLoadingMore(false) : setLoading(false);
     }
@@ -64,8 +66,6 @@ export default function HomePage() {
     }
   };
 
-  const counts: Record<string, number> = { all: total };
-
   return (
     <div className="min-h-screen">
       <FeedHeader
@@ -76,7 +76,7 @@ export default function HomePage() {
 
       <main className="max-w-6xl mx-auto px-4 sm:px-8 py-6">
         <div className="mb-4">
-          <CategoryFilter active={category} counts={counts} onChange={setCategory} />
+          <CategoryFilter active={category} counts={categoryCounts} onChange={setCategory} />
         </div>
 
         {loading ? (
@@ -100,8 +100,11 @@ export default function HomePage() {
                 />
               ))}
             </div>
-            {hasMore && (
-              <div className="flex justify-center mt-10">
+            <div className="flex flex-col items-center gap-3 mt-10">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Showing {articles.length} of {total} articles
+              </p>
+              {hasMore && (
                 <button
                   onClick={loadMore}
                   disabled={loadingMore}
@@ -110,8 +113,8 @@ export default function HomePage() {
                 >
                   {loadingMore ? 'Loading...' : 'Load More Articles'}
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </>
         )}
       </main>
