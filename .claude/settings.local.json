@@ -9,7 +9,10 @@
       "Bash(npm install:*)",
       "Bash(npx next:*)",
       "Bash(source ~/.nvm/nvm.sh)",
-      "Bash(nvm use:*)"
+      "Bash(nvm use:*)",
+      "Bash(PYTHONPATH=\"\" aws apprunner list-runtime-versions --region us-west-2)",
+      "Bash(PYTHONPATH=\"\" /usr/local/bin/aws apprunner list-runtime-versions --region us-west-2)",
+      "WebSearch"
     ]
   }
 }
