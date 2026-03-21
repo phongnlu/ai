@@ -100,3 +100,6 @@ Fetch RSS → Filter (AI) → Summarize (Anthropic SDK) → Save to data/article
 
 - **Article images** — revisit when the data pipeline populates `imageUrl` (currently always `null`)
 - **Scroll-to-top** — revisit if pagination switches to infinite scroll
+
+## TODO
+- **Figure out a way to deploy this app to aws. Have aws credentials setup locally**

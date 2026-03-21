@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(aws sts:*)",
+      "Bash(aws configure:*)",
+      "Bash(PYTHONPATH=\"\" aws sts get-caller-identity)",
+      "Bash(npx cdk:*)",
+      "Bash(PYTHONPATH=\"\" aws configure get region)",
+      "Bash(npm install:*)",
+      "Bash(npx next:*)",
+      "Bash(source ~/.nvm/nvm.sh)",
+      "Bash(nvm use:*)"
+    ]
+  }
+}

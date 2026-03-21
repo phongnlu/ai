@@ -1,9 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import fs from 'fs';
-import path from 'path';
-import { Article } from '@/types/article';
 import ArticleActions from '@/components/ArticleActions';
+import { loadArticles } from '@/lib/storage';
 
 const CATEGORY_COLORS: Record<string, string> = {
   research: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300',
@@ -12,16 +10,8 @@ const CATEGORY_COLORS: Record<string, string> = {
   'open-source': 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
 };
 
-function loadArticles(): Article[] {
-  try {
-    const p = path.join(process.cwd(), 'data', 'articles.json');
-    if (!fs.existsSync(p)) return [];
-    return JSON.parse(fs.readFileSync(p, 'utf-8'));
-  } catch { return []; }
-}
-
-export default function ArticlePage({ params }: { params: { id: string } }) {
-  const articles = loadArticles();
+export default async function ArticlePage({ params }: { params: { id: string } }) {
+  const articles = await loadArticles();
   const article = articles.find((a) => a.id === params.id);
   if (!article) notFound();
 

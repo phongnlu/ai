@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /Users/plu/Documents/phongnlu09212023/ai/ai_news remote -v)",
+      "Bash(PYTHONPATH=\"\" aws apprunner list-connections --region us-west-2)"
+    ]
+  }
+}

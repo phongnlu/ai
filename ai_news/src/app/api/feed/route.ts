@@ -1,18 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-import { Article, FeedResponse } from '@/types/article';
-
-const DATA_PATH = path.join(process.cwd(), 'data', 'articles.json');
-
-function loadArticles(): Article[] {
-  try {
-    if (!fs.existsSync(DATA_PATH)) return [];
-    return JSON.parse(fs.readFileSync(DATA_PATH, 'utf-8')) as Article[];
-  } catch {
-    return [];
-  }
-}
+import { FeedResponse } from '@/types/article';
+import { loadArticles } from '@/lib/storage';
 
 export async function GET(req: NextRequest): Promise<NextResponse<FeedResponse>> {
   const { searchParams } = req.nextUrl;
@@ -22,7 +10,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<FeedResponse>>
   const q = searchParams.get('q')?.toLowerCase();
   const sort = searchParams.get('sort') ?? 'latest';
 
-  let articles = loadArticles();
+  let articles = await loadArticles();
 
   if (q) {
     articles = articles.filter(

@@ -1,12 +1,9 @@
-import fs from 'fs';
-import path from 'path';
 import { fetchArticles } from './fetchAgent';
 import { filterArticles } from './filterAgent';
 import { summarizeArticles } from './summarizeAgent';
 import { buildRssFeed } from './rssFeedBuilder';
+import { saveArticles } from '@/lib/storage';
 import { Article } from '@/types/article';
-
-const DATA_PATH = path.join(process.cwd(), 'data', 'articles.json');
 
 export async function runPipeline(): Promise<Article[]> {
   console.log('[pipeline] Starting...');
@@ -21,9 +18,8 @@ export async function runPipeline(): Promise<Article[]> {
   console.log(`[pipeline] Summarized ${summarized.length} articles`);
 
   await buildRssFeed(summarized);
-
-  fs.writeFileSync(DATA_PATH, JSON.stringify(summarized, null, 2), 'utf-8');
-  console.log(`[pipeline] Saved to ${DATA_PATH}`);
+  await saveArticles(summarized);
+  console.log(`[pipeline] Saved ${summarized.length} articles`);
 
   return summarized;
 }

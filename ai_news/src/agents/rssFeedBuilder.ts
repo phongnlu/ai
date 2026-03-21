@@ -1,8 +1,7 @@
 import { Feed } from 'feed';
-import fs from 'fs';
-import path from 'path';
 import { Article } from '@/types/article';
 import { BASE_URL } from '@/config/env';
+import { saveFeedXml } from '@/lib/storage';
 
 export async function buildRssFeed(articles: Article[]): Promise<void> {
   const feed = new Feed({
@@ -27,7 +26,6 @@ export async function buildRssFeed(articles: Article[]): Promise<void> {
     });
   }
 
-  const outputPath = path.join(process.cwd(), 'public', 'feed.xml');
-  fs.writeFileSync(outputPath, feed.rss2(), 'utf-8');
-  console.log(`[rssFeedBuilder] Wrote ${articles.length} articles to ${outputPath}`);
+  await saveFeedXml(feed.rss2());
+  console.log(`[rssFeedBuilder] Saved ${articles.length} articles to feed`);
 }
