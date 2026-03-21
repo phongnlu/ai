@@ -12,7 +12,8 @@
       "Bash(nvm use:*)",
       "Bash(PYTHONPATH=\"\" aws apprunner list-runtime-versions --region us-west-2)",
       "Bash(PYTHONPATH=\"\" /usr/local/bin/aws apprunner list-runtime-versions --region us-west-2)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(ls /Users/plu/Documents/phongnlu09212023/ai/ai_news/README*)"
     ]
   }
 }

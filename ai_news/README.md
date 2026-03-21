@@ -161,3 +161,19 @@ deploy.sh          # one-command deploy script
 | `GET` | `/api/feed` | Paginated articles. Params: `page`, `pageSize`, `category`, `q`, `sort` |
 | `GET` | `/api/feed/xml` | RSS 2.0 feed |
 | `POST` | `/api/refresh` | Runs the full fetch → filter → summarize pipeline |
+| `GET` | `/api/cron-status` | Returns cron scheduler state |
+
+### Cron status response
+
+```json
+{
+  "lastRunAt": "2026-03-21T10:00:00.000Z",
+  "lastRunResult": "success",
+  "lastRunCount": 24,
+  "lastRunError": null,
+  "nextRunAt": "2026-03-21T16:00:00.000Z",
+  "schedule": "0 */6 * * *"
+}
+```
+
+`lastRunResult` is `"success"`, `"error"`, or `null` (not yet run). The cron only runs in production (`NODE_ENV=production`) — use `POST /api/refresh` for manual triggers in dev.
