@@ -18,28 +18,28 @@ echo "  Account : ${ACCOUNT_ID}"
 echo "  Region  : ${REGION}"
 echo ""
 
-# ── Step 1: Store ANTHROPIC_API_KEY in SSM ─────────────────────────────────────
-echo ">>> Step 1: Storing ANTHROPIC_API_KEY in SSM Parameter Store..."
-ENV_FILE="${SCRIPT_DIR}/.env.local"
-ANTHROPIC_KEY=""
+# ── Step 1: Store ANTHROPIC_API_KEY in SSM (only if not already set) ───────────
+echo ">>> Step 1: Checking ANTHROPIC_API_KEY in SSM Parameter Store..."
+EXISTING=$(aws ssm get-parameter --name "/ai-news/anthropic-api-key" \
+  --region "$REGION" --query "Parameter.Value" --output text 2>/dev/null || echo "")
 
-if [[ -f "$ENV_FILE" ]]; then
-  ANTHROPIC_KEY=$(grep '^ANTHROPIC_API_KEY=' "$ENV_FILE" | cut -d= -f2- | tr -d '\r')
+if [[ -z "$EXISTING" ]]; then
+  ENV_FILE="${SCRIPT_DIR}/.env.local"
+  ANTHROPIC_KEY=$(grep '^ANTHROPIC_API_KEY=' "$ENV_FILE" 2>/dev/null | cut -d= -f2- | tr -d '\r' || echo "")
+  if [[ -z "$ANTHROPIC_KEY" ]]; then
+    echo "  ERROR: ANTHROPIC_API_KEY not found in SSM or .env.local"
+    exit 1
+  fi
+  aws ssm put-parameter \
+    --name "/ai-news/anthropic-api-key" \
+    --value "$ANTHROPIC_KEY" \
+    --type "SecureString" \
+    --region "$REGION" \
+    --no-cli-pager
+  echo "  ✓ SSM parameter created"
+else
+  echo "  ✓ SSM parameter already exists, skipping"
 fi
-
-if [[ -z "$ANTHROPIC_KEY" ]]; then
-  echo "  ERROR: ANTHROPIC_API_KEY not found in .env.local"
-  exit 1
-fi
-
-aws ssm put-parameter \
-  --name "/ai-news/anthropic-api-key" \
-  --value "$ANTHROPIC_KEY" \
-  --type "SecureString" \
-  --overwrite \
-  --region "$REGION" \
-  --no-cli-pager
-echo "  ✓ SSM parameter stored"
 
 # ── Step 2: Create / verify GitHub connection ──────────────────────────────────
 echo ""
@@ -95,7 +95,26 @@ if [[ ! -d node_modules ]]; then
   npm install
 fi
 
-PYTHONPATH="" npx cdk bootstrap "aws://${ACCOUNT_ID}/${REGION}" 2>/dev/null || true
+echo "  Bootstrapping CDK toolkit (upgrading if needed)..."
+PYTHONPATH="" npx cdk bootstrap "aws://${ACCOUNT_ID}/${REGION}" \
+  --toolkit-stack-name CDKToolkit \
+  -c "githubConnectionArn=${CONNECTION_ARN}"
+echo "  ✓ CDK bootstrap complete"
+
+# Clean up orphaned resources if the stack doesn't exist or is in a failed state
+STACK_STATUS=$(aws cloudformation describe-stacks \
+  --stack-name AiNewsStack --region "$REGION" \
+  --query "Stacks[0].StackStatus" --output text 2>/dev/null || echo "DOES_NOT_EXIST")
+
+if [[ "$STACK_STATUS" == "DOES_NOT_EXIST" || "$STACK_STATUS" == "ROLLBACK_COMPLETE" ]]; then
+  echo "  Cleaning up orphaned resources from failed previous attempt..."
+  aws s3 rb "s3://ai-news-data-${ACCOUNT_ID}" --force 2>/dev/null || true
+  if [[ "$STACK_STATUS" == "ROLLBACK_COMPLETE" ]]; then
+    aws cloudformation delete-stack --stack-name AiNewsStack --region "$REGION"
+    aws cloudformation wait stack-delete-complete --stack-name AiNewsStack --region "$REGION"
+  fi
+  echo "  ✓ Cleanup done"
+fi
 
 PYTHONPATH="" npx cdk deploy AiNewsStack \
   --require-approval never \
@@ -117,7 +136,7 @@ echo "  App Runner URL : ${SERVICE_URL}"
 echo ""
 echo "  Notes:"
 echo "  • First build takes ~3-5 min (App Runner builds from source)"
-echo "  • Auto-deploys on every push to the master branch"
+echo "  • Deployment is manual — re-run ./deploy.sh to redeploy"
 echo "  • Pipeline runs on startup + every 6h (node-cron via instrumentation.ts)"
 echo "  • To trigger manually: POST ${SERVICE_URL}/api/refresh"
 echo ""

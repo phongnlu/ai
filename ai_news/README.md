@@ -75,7 +75,7 @@ SSM Parameter Store  (ANTHROPIC_API_KEY)
 
 **What it does (step by step):**
 
-1. Stores `ANTHROPIC_API_KEY` from `.env.local` in SSM Parameter Store as a SecureString
+1. Checks SSM for `ANTHROPIC_API_KEY` — writes it from `.env.local` only on first deploy, skips on subsequent runs
 2. Creates an App Runner GitHub connection (or verifies an existing one)
 3. If the connection needs authorization → prints the console URL and exits
 4. Deploys the CDK stack (S3 bucket, IAM role, App Runner service)
@@ -92,6 +92,19 @@ Auto-deploy on push is disabled. Run manually whenever you want to deploy:
 
 ```bash
 ./deploy.sh
+```
+
+### Rotating the API key
+
+The `ANTHROPIC_API_KEY` is stored in SSM once and never overwritten by `deploy.sh`. To rotate it manually:
+
+```bash
+PYTHONPATH="" aws ssm put-parameter \
+  --name "/ai-news/anthropic-api-key" \
+  --value "sk-ant-..." \
+  --type SecureString \
+  --overwrite \
+  --region us-west-2
 ```
 
 ### Trigger a pipeline refresh

@@ -1,0 +1,21 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "181c399b72ab565cf74de23facb5ee73568b537f511defd2bb1b5e59039fc984": {
+      "displayName": "AiNewsStack Template",
+      "source": {
+        "path": "AiNewsStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "934174848828-us-west-2-fb214602": {
+          "bucketName": "cdk-hnb659fds-assets-934174848828-us-west-2",
+          "objectKey": "181c399b72ab565cf74de23facb5ee73568b537f511defd2bb1b5e59039fc984.json",
+          "region": "us-west-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::934174848828:role/cdk-hnb659fds-file-publishing-role-934174848828-us-west-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
