@@ -124,7 +124,25 @@ PYTHONPATH="" npx cdk deploy AiNewsStack \
 
 echo "  ✓ CDK deploy complete"
 
-# ── Step 4: Print service URL ──────────────────────────────────────────────────
+# ── Step 4: Trigger App Runner deployment ─────────────────────────────────────
+echo ""
+echo ">>> Step 4: Triggering App Runner deployment..."
+SERVICE_ARN=$(aws apprunner list-services --region "$REGION" \
+  --query "ServiceSummaryList[?ServiceName=='ai-news'].ServiceArn | [0]" \
+  --output text 2>/dev/null || echo "")
+
+if [[ -n "$SERVICE_ARN" && "$SERVICE_ARN" != "None" ]]; then
+  aws apprunner start-deployment --service-arn "$SERVICE_ARN" --region "$REGION" \
+    --query "OperationId" --output text > /dev/null
+  echo "  ✓ Deployment started (pull latest commit + rebuild)"
+  echo "  Waiting for service to be ready..."
+  aws apprunner wait service-running --service-arn "$SERVICE_ARN" --region "$REGION" 2>/dev/null || true
+  echo "  ✓ Service is running"
+else
+  echo "  (skipped — service not found yet, App Runner will build on first run)"
+fi
+
+# ── Step 5: Print service URL ──────────────────────────────────────────────────
 echo ""
 echo ">>> Deployment complete!"
 SERVICE_URL=$(python3 -c \
