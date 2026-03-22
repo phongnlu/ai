@@ -42,6 +42,45 @@ export async function saveArticles(articles: Article[]): Promise<void> {
   fs.writeFileSync(filePath, JSON.stringify(articles, null, 2), 'utf-8');
 }
 
+// ── Push Subscriptions ────────────────────────────────────────────────────────
+
+export interface PushSubscriptionRecord {
+  endpoint: string;
+  keys: { p256dh: string; auth: string };
+}
+
+export async function loadSubscriptions(): Promise<PushSubscriptionRecord[]> {
+  if (s3 && BUCKET) {
+    try {
+      const res = await s3.send(new GetObjectCommand({ Bucket: BUCKET, Key: 'subscriptions.json' }));
+      const body = await res.Body?.transformToString();
+      return body ? (JSON.parse(body) as PushSubscriptionRecord[]) : [];
+    } catch (err: unknown) {
+      if ((err as { name?: string }).name === 'NoSuchKey') return [];
+      throw err;
+    }
+  }
+  const filePath = path.join(process.cwd(), 'data', 'subscriptions.json');
+  try {
+    if (!fs.existsSync(filePath)) return [];
+    return JSON.parse(fs.readFileSync(filePath, 'utf-8')) as PushSubscriptionRecord[];
+  } catch { return []; }
+}
+
+export async function saveSubscriptions(subs: PushSubscriptionRecord[]): Promise<void> {
+  if (s3 && BUCKET) {
+    await s3.send(new PutObjectCommand({
+      Bucket: BUCKET,
+      Key: 'subscriptions.json',
+      Body: JSON.stringify(subs, null, 2),
+      ContentType: 'application/json',
+    }));
+    return;
+  }
+  const filePath = path.join(process.cwd(), 'data', 'subscriptions.json');
+  fs.writeFileSync(filePath, JSON.stringify(subs, null, 2), 'utf-8');
+}
+
 // ── RSS Feed XML ──────────────────────────────────────────────────────────────
 
 export async function loadFeedXml(): Promise<string | null> {

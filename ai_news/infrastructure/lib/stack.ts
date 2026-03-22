@@ -38,7 +38,10 @@ export class AiNewsStack extends cdk.Stack {
       maxConcurrency: 100,
     });
 
-    // ── App Runner service (source: GitHub) ────────────────────────────────────
+    const ssmArn = (name: string) =>
+      `arn:aws:ssm:${this.region}:${this.account}:parameter/ai-news/${name}`;
+
+    // ── App Runner service (source: GitHub, config: API) ───────────────────────
     const service = new apprunner.CfnService(this, 'Service', {
       serviceName: 'ai-news',
       sourceConfiguration: {
@@ -51,11 +54,28 @@ export class AiNewsStack extends cdk.Stack {
           sourceCodeVersion: { type: 'BRANCH', value: 'master' },
           sourceDirectory: 'ai_news',
           codeConfiguration: {
-            configurationSource: 'REPOSITORY', // reads apprunner.yaml
+            // API mode: all env vars + secrets defined here, apprunner.yaml ignored
+            configurationSource: 'API',
+            codeConfigurationValues: {
+              runtime: 'NODEJS_22',
+              buildCommand: 'npm install && npm run build',
+              startCommand: 'npm start',
+              port: '3000',
+              environmentVariables: [
+                { name: 'NODE_ENV',                value: 'production' },
+                { name: 'NEXT_TELEMETRY_DISABLED', value: '1' },
+                { name: 'S3_BUCKET',               value: bucket.bucketName },
+                { name: 'AWS_REGION',              value: this.region },
+              ],
+              environmentSecrets: [
+                { name: 'ANTHROPIC_API_KEY',  value: ssmArn('anthropic-api-key') },
+                { name: 'VAPID_PUBLIC_KEY',   value: ssmArn('vapid-public-key') },
+                { name: 'VAPID_PRIVATE_KEY',  value: ssmArn('vapid-private-key') },
+              ],
+            },
           },
         },
       },
-      // Minimum valid CPU/memory combination
       instanceConfiguration: {
         instanceRoleArn: instanceRole.roleArn,
         cpu: '256',    // 0.25 vCPU

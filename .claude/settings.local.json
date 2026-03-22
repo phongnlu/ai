@@ -26,7 +26,14 @@
       "Bash(PYTHONPATH=\"\" /usr/local/bin/aws apprunner associate-custom-domain --service-arn \"arn:aws:apprunner:us-west-2:934174848828:service/ai-news/012b30d5e62d4c389227447e86c07398\" --domain-name \"ai-news.onesolution365.com\" --region us-west-2)",
       "Bash(PYTHONPATH=\"\" /usr/local/bin/aws apprunner describe-custom-domains --service-arn \"arn:aws:apprunner:us-west-2:934174848828:service/ai-news/012b30d5e62d4c389227447e86c07398\" --region us-west-2 --query \"CustomDomains[0].CertificateValidationRecords\")",
       "Bash(PYTHONPATH=\"\" /usr/local/bin/aws route53 change-resource-record-sets --hosted-zone-id Z08860162SQBLXOSCKJN3 --change-batch '{:*)",
-      "Bash(PYTHONPATH=\"\" /usr/local/bin/aws apprunner describe-custom-domains --service-arn \"arn:aws:apprunner:us-west-2:934174848828:service/ai-news/012b30d5e62d4c389227447e86c07398\" --region us-west-2 --query \"CustomDomains[0].{Status:Status,Records:CertificateValidationRecords[*].{Name:Name,Status:Status}}\")"
+      "Bash(PYTHONPATH=\"\" /usr/local/bin/aws apprunner describe-custom-domains --service-arn \"arn:aws:apprunner:us-west-2:934174848828:service/ai-news/012b30d5e62d4c389227447e86c07398\" --region us-west-2 --query \"CustomDomains[0].{Status:Status,Records:CertificateValidationRecords[*].{Name:Name,Status:Status}}\")",
+      "Bash(node -e \"const wp = require\\(''web-push''\\); const keys = wp.generateVAPIDKeys\\(\\); console.log\\(''PUBLIC:'', keys.publicKey\\); console.log\\(''PRIVATE:'', keys.privateKey\\);\")",
+      "Bash(PYTHONPATH=\"\" /usr/local/bin/aws ssm put-parameter --name \"/ai-news/vapid-public-key\" --value \"BPDZagV9SEqVlXf30_ogrHNYn-Bi3eK0p0QlsaKwc6ZkH3k84uxeFE-fzfiyrQSG4S6nv3INway3HqxuKcl2mxQ\" --type String --region us-west-2 --no-cli-pager)",
+      "Bash(PYTHONPATH=\"\" /usr/local/bin/aws ssm put-parameter --name \"/ai-news/vapid-private-key\" --value \"sx8X2AsxeZJz0Vy5EJMz8qYmoDF9ICxZvH5UIc_9yZU\" --type SecureString --region us-west-2 --no-cli-pager)",
+      "Bash(node -e \"require\\(''sharp''\\)\")",
+      "Bash(convert --version)",
+      "Bash(node -e \":*)",
+      "Bash(npx playwright:*)"
     ]
   }
 }

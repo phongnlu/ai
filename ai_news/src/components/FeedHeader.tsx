@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import SearchBar from './SearchBar';
 import ThemeToggle from './ThemeToggle';
+import PushNotificationButton from './PushNotificationButton';
 
 interface FeedHeaderProps {
   search: string;
@@ -29,6 +30,7 @@ export default function FeedHeader({ search, onSearchChange, onSearchClear }: Fe
               <path strokeLinecap="round" d="M5 3h14a1 1 0 0 1 1 1v17.27a.5.5 0 0 1-.78.42L12 17.27l-7.22 4.42A.5.5 0 0 1 4 21.27V4a1 1 0 0 1 1-1z" />
             </svg>
           </Link>
+          <PushNotificationButton />
           <ThemeToggle />
         </nav>
       </div>
