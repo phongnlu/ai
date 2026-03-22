@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import PWAInstallBanner from '@/components/PWAInstallBanner';
 
 export const metadata: Metadata = {
   title: 'AI News Feed',
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-200">
         {children}
+        <PWAInstallBanner />
         <script
           dangerouslySetInnerHTML={{
             __html: `
