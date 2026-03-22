@@ -24,6 +24,15 @@ export function useTheme() {
     const stored = (localStorage.getItem(STORAGE_KEY) as Theme) ?? 'system';
     setTheme(stored);
     applyTheme(stored);
+
+    // When in system mode, follow OS dark/light changes in real time
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = () => {
+      const current = (localStorage.getItem(STORAGE_KEY) as Theme) ?? 'system';
+      if (current === 'system') applyTheme('system');
+    };
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
   }, []);
 
   const setAndPersist = (t: Theme) => {
