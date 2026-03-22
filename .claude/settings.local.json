@@ -33,7 +33,9 @@
       "Bash(node -e \"require\\(''sharp''\\)\")",
       "Bash(convert --version)",
       "Bash(node -e \":*)",
-      "Bash(npx playwright:*)"
+      "Bash(npx playwright:*)",
+      "Bash(PYTHONPATH=\"\" /usr/local/bin/aws apprunner describe-service --service-arn \"arn:aws:apprunner:us-west-2:934174848828:service/ai-news/012b30d5e62d4c389227447e86c07398\" --region us-west-2 --query \"Service.{Status:Status,UpdatedAt:UpdatedAt}\")",
+      "Bash(PYTHONPATH=\"\" /usr/local/bin/aws apprunner wait service-running --service-arn \"arn:aws:apprunner:us-west-2:934174848828:service/ai-news/012b30d5e62d4c389227447e86c07398\" --region us-west-2)"
     ]
   }
 }

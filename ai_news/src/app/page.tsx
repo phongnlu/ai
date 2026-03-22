@@ -25,12 +25,12 @@ export default function HomePage() {
   const [toasts, setToasts] = useState<ToastState[]>([]);
   const { isBookmarked, addBookmark, removeBookmark } = useBookmarks();
 
-  const fetchFeed = useCallback(async (p: number, cat: string, q: string, append = false) => {
+  const fetchFeed = useCallback(async (p: number, cat: string, q: string, b: string, append = false) => {
     append ? setLoadingMore(true) : setLoading(true);
     try {
       const params = new URLSearchParams({ page: String(p), pageSize: '12' });
       if (cat && cat !== 'all') params.set('category', cat);
-      const query = [q, brand].filter(Boolean).join(' ');
+      const query = [q, b].filter(Boolean).join(' ');
       if (query) params.set('q', query);
       const res = await fetch(`/api/feed?${params}`);
       const data: FeedResponse = await res.json();
@@ -45,13 +45,13 @@ export default function HomePage() {
 
   useEffect(() => {
     setPage(1);
-    fetchFeed(1, category, search);
+    fetchFeed(1, category, search, brand);
   }, [category, search, brand, fetchFeed]);
 
   const loadMore = () => {
     const next = page + 1;
     setPage(next);
-    fetchFeed(next, category, search, true);
+    fetchFeed(next, category, search, brand, true);
   };
 
   const showToast = (message: string, type: ToastState['type']) => {

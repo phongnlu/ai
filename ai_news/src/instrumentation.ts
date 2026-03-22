@@ -9,8 +9,8 @@ function nextRunDate(schedule: string): Date {
 }
 
 export async function register() {
-  // Only run in the Node.js runtime (not edge) and in production
-  if (process.env.NEXT_RUNTIME !== 'nodejs' || process.env.NODE_ENV !== 'production') return;
+  // Skip on edge runtime; allow nodejs or undefined (App Runner sets neither)
+  if (process.env.NEXT_RUNTIME === 'edge' || process.env.NODE_ENV !== 'production') return;
 
   const { default: cron } = await import('node-cron');
   const { runPipeline } = await import('./agents/pipeline');
