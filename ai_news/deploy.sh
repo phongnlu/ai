@@ -41,6 +41,26 @@ else
   echo "  ✓ SSM parameter already exists, skipping"
 fi
 
+# ── Step 1b: Store VAPID keys in SSM (only if not already set) ─────────────────
+echo ""
+echo ">>> Step 1b: Checking VAPID keys in SSM Parameter Store..."
+VAPID_PUB=$(aws ssm get-parameter --name "/ai-news/vapid-public-key" \
+  --region "$REGION" --query "Parameter.Value" --output text 2>/dev/null || echo "")
+VAPID_PRIV=$(aws ssm get-parameter --name "/ai-news/vapid-private-key" \
+  --with-decryption --region "$REGION" --query "Parameter.Value" --output text 2>/dev/null || echo "")
+
+if [[ -z "$VAPID_PUB" || -z "$VAPID_PRIV" ]]; then
+  echo "  Generating VAPID keys..."
+  VAPID_KEYS=$(cd "${SCRIPT_DIR}" && npx web-push generate-vapid-keys --json)
+  VAPID_PUB=$(echo "$VAPID_KEYS" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['publicKey'])")
+  VAPID_PRIV=$(echo "$VAPID_KEYS" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['privateKey'])")
+  aws ssm put-parameter --name "/ai-news/vapid-public-key"  --value "$VAPID_PUB"  --type String       --region "$REGION" --no-cli-pager
+  aws ssm put-parameter --name "/ai-news/vapid-private-key" --value "$VAPID_PRIV" --type SecureString --region "$REGION" --no-cli-pager
+  echo "  ✓ VAPID keys generated and stored in SSM"
+else
+  echo "  ✓ VAPID keys already exist, skipping"
+fi
+
 # ── Step 2: Create / verify GitHub connection ──────────────────────────────────
 echo ""
 echo ">>> Step 2: Checking GitHub App Runner connection..."
@@ -155,6 +175,6 @@ echo ""
 echo "  Notes:"
 echo "  • First build takes ~3-5 min (App Runner builds from source)"
 echo "  • Deployment is manual — re-run ./deploy.sh to redeploy"
-echo "  • Pipeline runs on startup + every 6h (node-cron via instrumentation.ts)"
+echo "  • Pipeline runs on startup + every hour (node-cron via instrumentation.ts)"
 echo "  • To trigger manually: POST ${SERVICE_URL}/api/refresh"
 echo ""

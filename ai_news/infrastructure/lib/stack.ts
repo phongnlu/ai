@@ -61,13 +61,13 @@ export class AiNewsStack extends cdk.Stack {
               buildCommand: 'npm install && npm run build',
               startCommand: 'npm start',
               port: '3000',
-              environmentVariables: [
+              runtimeEnvironmentVariables: [
                 { name: 'NODE_ENV',                value: 'production' },
                 { name: 'NEXT_TELEMETRY_DISABLED', value: '1' },
                 { name: 'S3_BUCKET',               value: bucket.bucketName },
                 { name: 'AWS_REGION',              value: this.region },
               ],
-              environmentSecrets: [
+              runtimeEnvironmentSecrets: [
                 { name: 'ANTHROPIC_API_KEY',  value: ssmArn('anthropic-api-key') },
                 { name: 'VAPID_PUBLIC_KEY',   value: ssmArn('vapid-public-key') },
                 { name: 'VAPID_PRIVATE_KEY',  value: ssmArn('vapid-private-key') },
