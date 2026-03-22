@@ -27,7 +27,7 @@ export default function ArticleCard({ article, isBookmarked, onBookmarkToggle }:
   return (
     <article className="relative flex flex-col rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 overflow-hidden">
       <Link href={`/article/${article.id}`} className="flex flex-col flex-1 p-5">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-3 pr-7">
           <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${CATEGORY_COLORS[article.category] ?? ''}`}>
             {article.category}
           </span>
