@@ -25,15 +25,16 @@ export async function runPipeline(): Promise<Article[]> {
   await saveArticles(summarized);
   console.log(`[pipeline] Saved ${summarized.length} articles`);
 
-  // Send push notification for new articles
+  // Send push notification for each new article
   const newArticles = summarized.filter((a) => !previousIds.has(a.id));
-  if (newArticles.length > 0) {
-    const first = newArticles[0];
+  for (const article of newArticles) {
     await sendPushToAll({
-      title: `${newArticles.length} new AI article${newArticles.length > 1 ? 's' : ''}`,
-      body: first.title,
-      url: `https://ai-news.onesolution365.com/article/${first.id}`,
+      title: article.source,
+      body: article.title,
+      url: `https://ai-news.onesolution365.com/article/${article.id}`,
     });
+  }
+  if (newArticles.length > 0) {
     console.log(`[pipeline] Push sent for ${newArticles.length} new articles`);
   }
 
