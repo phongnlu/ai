@@ -4,7 +4,8 @@ node_modules/
 # Next.js
 .next/
 out/
-**/*/cdk.out/
+cdk.out/
+**/cdk.out/
 
 # Build output
 dist/
