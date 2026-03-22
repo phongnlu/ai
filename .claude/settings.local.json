@@ -15,7 +15,18 @@
       "WebSearch",
       "Bash(ls /Users/plu/Documents/phongnlu09212023/ai/ai_news/README*)",
       "Bash(PYTHONPATH=\"\" /usr/local/bin/aws apprunner list-services --region us-west-2 --query \"ServiceSummaryList[*].{Name:ServiceName,Arn:ServiceArn,Status:Status}\" --output table)",
-      "Bash(PYTHONPATH=\"\" /usr/local/bin/aws apprunner start-deployment --service-arn \"arn:aws:apprunner:us-west-2:934174848828:service/ai-news/012b30d5e62d4c389227447e86c07398\" --region us-west-2 --query \"OperationId\" --output text)"
+      "Bash(PYTHONPATH=\"\" /usr/local/bin/aws apprunner start-deployment --service-arn \"arn:aws:apprunner:us-west-2:934174848828:service/ai-news/012b30d5e62d4c389227447e86c07398\" --region us-west-2 --query \"OperationId\" --output text)",
+      "Bash(npm run:*)",
+      "Bash(npx tsc:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(./deploy.sh)",
+      "Bash(PYTHONPATH=\"\" /usr/local/bin/aws route53 list-hosted-zones --query \"HostedZones[?Name==''onesolution365.com.''].{Id:Id,Name:Name}\" --output table)",
+      "Bash(PYTHONPATH=\"\" /usr/local/bin/aws apprunner associate-custom-domain --service-arn \"arn:aws:apprunner:us-west-2:934174848828:service/ai-news/012b30d5e62d4c389227447e86c07398\" --domain-name \"ai-news.onesolution365.com\" --region us-west-2)",
+      "Bash(PYTHONPATH=\"\" /usr/local/bin/aws apprunner describe-custom-domains --service-arn \"arn:aws:apprunner:us-west-2:934174848828:service/ai-news/012b30d5e62d4c389227447e86c07398\" --region us-west-2 --query \"CustomDomains[0].CertificateValidationRecords\")",
+      "Bash(PYTHONPATH=\"\" /usr/local/bin/aws route53 change-resource-record-sets --hosted-zone-id Z08860162SQBLXOSCKJN3 --change-batch '{:*)",
+      "Bash(PYTHONPATH=\"\" /usr/local/bin/aws apprunner describe-custom-domains --service-arn \"arn:aws:apprunner:us-west-2:934174848828:service/ai-news/012b30d5e62d4c389227447e86c07398\" --region us-west-2 --query \"CustomDomains[0].{Status:Status,Records:CertificateValidationRecords[*].{Name:Name,Status:Status}}\")"
     ]
   }
 }
