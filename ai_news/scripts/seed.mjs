@@ -33,11 +33,20 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 if (!ANTHROPIC_API_KEY) { console.error('Missing ANTHROPIC_API_KEY'); process.exit(1); }
 
 const RSS_SOURCES = [
-  { name: 'Hacker News AI', url: 'https://hnrss.org/newest?q=AI+LLM&count=30' },
-  { name: 'ArXiv cs.AI',    url: 'https://rss.arxiv.org/rss/cs.AI' },
-  { name: 'MIT Tech Review', url: 'https://www.technologyreview.com/feed/' },
-  { name: 'VentureBeat AI', url: 'https://venturebeat.com/category/ai/feed/' },
-  { name: 'The Verge AI',   url: 'https://www.theverge.com/rss/ai-artificial-intelligence/index.xml' },
+  { name: 'Hacker News AI',      url: 'https://hnrss.org/newest?q=AI+LLM&count=50' },
+  { name: 'ArXiv cs.AI',         url: 'https://rss.arxiv.org/rss/cs.AI' },
+  { name: 'MIT Tech Review',     url: 'https://www.technologyreview.com/feed/' },
+  { name: 'VentureBeat AI',      url: 'https://venturebeat.com/category/ai/feed/' },
+  { name: 'The Verge AI',        url: 'https://www.theverge.com/rss/ai-artificial-intelligence/index.xml' },
+  // Claude / Anthropic
+  { name: 'Anthropic News',      url: 'https://www.anthropic.com/rss.xml' },
+  { name: 'Hacker News Claude',  url: 'https://hnrss.org/newest?q=Claude+Anthropic&count=30' },
+  // OpenAI / ChatGPT / Codex
+  { name: 'OpenAI News',         url: 'https://openai.com/news/rss.xml' },
+  { name: 'Hacker News ChatGPT', url: 'https://hnrss.org/newest?q=ChatGPT+OpenAI+Codex&count=30' },
+  // Google Gemini
+  { name: 'Google DeepMind Blog', url: 'https://deepmind.google/blog/rss.xml' },
+  { name: 'Hacker News Gemini',  url: 'https://hnrss.org/newest?q=Gemini+Google+AI&count=30' },
 ];
 
 const AI_KEYWORDS = [
@@ -45,6 +54,9 @@ const AI_KEYWORDS = [
   'transformer', 'artificial intelligence', 'deep learning', 'openai',
   'anthropic', 'hugging face', 'inference', 'training', 'benchmark',
   'agent', 'diffusion', 'multimodal', 'embedding', 'fine-tun', 'chatbot', 'generative',
+  'claude code', 'codex', 'copilot', 'cursor', 'deepmind',
+  'chatgpt', 'gpt-4', 'gpt-5', 'o1', 'o3', 'sonnet', 'opus', 'mistral',
+  'llama', 'deepseek', 'reasoning model', 'context window',
 ];
 
 const VALID_CATEGORIES = ['research', 'product', 'policy', 'open-source'];
