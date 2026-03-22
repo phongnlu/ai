@@ -8,6 +8,10 @@ const AI_KEYWORDS = [
   'openai', 'anthropic', 'hugging face', 'inference', 'training',
   'benchmark', 'agent', 'diffusion', 'multimodal', 'embedding',
   'fine-tun', 'chatbot', 'generative',
+  // Additional product-specific keywords
+  'claude code', 'codex', 'copilot', 'cursor', 'deepmind', 'gemini',
+  'chatgpt', 'gpt-4', 'gpt-5', 'o1', 'o3', 'sonnet', 'opus', 'mistral',
+  'llama', 'deepseek', 'reasoning model', 'context window',
 ];
 
 function scoreArticle(article: Article): number {
