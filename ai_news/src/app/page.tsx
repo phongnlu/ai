@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Article, FeedResponse } from '@/types/article';
 import FeedHeader from '@/components/FeedHeader';
 import CategoryFilter from '@/components/CategoryFilter';
@@ -24,6 +24,7 @@ export default function HomePage() {
   const [brand, setBrand] = useState('');
   const [toasts, setToasts] = useState<ToastState[]>([]);
   const { isBookmarked, addBookmark, removeBookmark } = useBookmarks();
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   const fetchFeed = useCallback(async (p: number, cat: string, q: string, b: string, append = false) => {
     append ? setLoadingMore(true) : setLoading(true);
@@ -48,11 +49,24 @@ export default function HomePage() {
     fetchFeed(1, category, search, brand);
   }, [category, search, brand, fetchFeed]);
 
-  const loadMore = () => {
+  const loadMore = useCallback(() => {
+    if (loadingMore || !hasMore) return;
     const next = page + 1;
     setPage(next);
     fetchFeed(next, category, search, brand, true);
-  };
+  }, [loadingMore, hasMore, page, category, search, brand, fetchFeed]);
+
+  // Infinite scroll via IntersectionObserver
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => { if (entries[0].isIntersecting) loadMore(); },
+      { rootMargin: '200px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [loadMore]);
 
   const showToast = (message: string, type: ToastState['type']) => {
     const id = Date.now();
@@ -108,16 +122,10 @@ export default function HomePage() {
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Showing {articles.length} of {total} articles
               </p>
-              {hasMore && (
-                <button
-                  onClick={loadMore}
-                  disabled={loadingMore}
-                  aria-label="Load more articles"
-                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-60"
-                >
-                  {loadingMore ? 'Loading...' : 'Load More Articles'}
-                </button>
+              {loadingMore && (
+                <p className="text-sm text-gray-400 dark:text-gray-500 animate-pulse">Loading more...</p>
               )}
+              <div ref={sentinelRef} className="h-1" />
             </div>
           </>
         )}
