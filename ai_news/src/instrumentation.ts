@@ -1,9 +1,10 @@
 import { recordSuccess, recordError } from '@/lib/cronStatus';
 
 function nextRunDate(schedule: string): Date {
-  // Simple approximation: parse the */N hour pattern, otherwise default to +6h
+  // Parse common patterns: "0 * * * *" (hourly), "0 */N * * *" (every N hours)
+  if (schedule === '0 * * * *') return new Date(Date.now() + 60 * 60 * 1000);
   const match = schedule.match(/0 \*\/(\d+) \* \* \*/);
-  const hours = match ? parseInt(match[1], 10) : 6;
+  const hours = match ? parseInt(match[1], 10) : 1;
   return new Date(Date.now() + hours * 60 * 60 * 1000);
 }
 
@@ -31,7 +32,7 @@ export async function register() {
   // Run once on startup (5s delay to let server fully initialize)
   setTimeout(run, 5_000);
 
-  // Then on schedule (default: every 6 hours)
+  // Then on schedule (default: every hour)
   cron.schedule(schedule, run);
 
   console.log(`[instrumentation] Pipeline scheduled: startup + "${schedule}"`);

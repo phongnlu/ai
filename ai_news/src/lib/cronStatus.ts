@@ -13,7 +13,7 @@ const status: CronStatus = {
   lastRunCount: null,
   lastRunError: null,
   nextRunAt: null,
-  schedule: process.env.CRON_SCHEDULE ?? '0 */6 * * *',
+  schedule: process.env.CRON_SCHEDULE ?? '0 * * * *',
 };
 
 export function getCronStatus(): CronStatus {
