@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Article, FeedResponse } from '@/types/article';
 import FeedHeader from '@/components/FeedHeader';
 import CategoryFilter from '@/components/CategoryFilter';
+import BrandFilter from '@/components/BrandFilter';
 import ArticleCard from '@/components/ArticleCard';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
 import Toast from '@/components/Toast';
@@ -20,6 +21,7 @@ export default function HomePage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [category, setCategory] = useState('all');
   const [search, setSearch] = useState('');
+  const [brand, setBrand] = useState('');
   const [toasts, setToasts] = useState<ToastState[]>([]);
   const { isBookmarked, addBookmark, removeBookmark } = useBookmarks();
 
@@ -28,7 +30,8 @@ export default function HomePage() {
     try {
       const params = new URLSearchParams({ page: String(p), pageSize: '12' });
       if (cat && cat !== 'all') params.set('category', cat);
-      if (q) params.set('q', q);
+      const query = [q, brand].filter(Boolean).join(' ');
+      if (query) params.set('q', query);
       const res = await fetch(`/api/feed?${params}`);
       const data: FeedResponse = await res.json();
       setArticles((prev) => append ? [...prev, ...data.articles] : data.articles);
@@ -43,7 +46,7 @@ export default function HomePage() {
   useEffect(() => {
     setPage(1);
     fetchFeed(1, category, search);
-  }, [category, search, fetchFeed]);
+  }, [category, search, brand, fetchFeed]);
 
   const loadMore = () => {
     const next = page + 1;
@@ -75,8 +78,9 @@ export default function HomePage() {
       />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-8 py-6">
-        <div className="mb-4">
+        <div className="mb-4 flex flex-col gap-2">
           <CategoryFilter active={category} counts={categoryCounts} onChange={setCategory} />
+          <BrandFilter active={brand} onChange={setBrand} />
         </div>
 
         {loading ? (
