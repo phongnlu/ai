@@ -14,7 +14,7 @@ export async function register() {
   const { default: cron } = await import('node-cron');
   const { runPipeline } = await import('./agents/pipeline');
 
-  const schedule = process.env.CRON_SCHEDULE ?? '0 */6 * * *';
+  const schedule = process.env.CRON_SCHEDULE ?? '0 * * * *';
 
   const run = async () => {
     console.log('[cron] Running pipeline...');

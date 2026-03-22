@@ -172,7 +172,7 @@ deploy.sh          # one-command deploy script
   "lastRunCount": 24,
   "lastRunError": null,
   "nextRunAt": "2026-03-21T16:00:00.000Z",
-  "schedule": "0 */6 * * *"
+  "schedule": "0 * * * *"
 }
 ```
 
