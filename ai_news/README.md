@@ -122,6 +122,8 @@ curl -X POST https://ai-news.onesolution365.com/api/refresh
 | `S3_BUCKET` | No (auto-set in prod) | S3 bucket name; if unset, uses local `data/articles.json` |
 | `AWS_REGION` | No (auto-set in prod) | AWS region (default: `us-west-2`) |
 | `CRON_SCHEDULE` | No | Cron expression for pipeline schedule (default: `0 * * * *`) |
+| `VAPID_PUBLIC_KEY` | Yes (prod) | VAPID public key for push notifications (set from SSM) |
+| `VAPID_PRIVATE_KEY` | Yes (prod) | VAPID private key for push notifications (set from SSM) |
 
 In production, `S3_BUCKET` and `AWS_REGION` are set automatically by the CDK stack. `ANTHROPIC_API_KEY` is injected from SSM at runtime.
 
@@ -155,6 +157,37 @@ deploy.sh          # one-command deploy script
 
 ---
 
+## PWA & push notifications
+
+The app is installable as a Progressive Web App and supports browser push notifications for new articles.
+
+### Installing
+
+Visit https://ai-news.onesolution365.com in Chrome/Edge and click **Install** in the address bar (or use the browser menu). On mobile, use **Add to Home Screen**.
+
+### Push notifications
+
+Click the **bell icon** in the header to subscribe. The browser will prompt for notification permission. Once granted, you'll receive a notification whenever the pipeline publishes new articles (runs hourly).
+
+To unsubscribe, click the bell icon again.
+
+### VAPID keys (first deploy only)
+
+Push notifications require VAPID keys stored in SSM. They are already provisioned for production. To rotate them:
+
+```bash
+# Generate new keys
+npx web-push generate-vapid-keys
+
+# Store in SSM
+PYTHONPATH="" aws ssm put-parameter --name "/ai-news/vapid-public-key"  --value "<PUBLIC_KEY>"  --type String       --overwrite --region us-west-2
+PYTHONPATH="" aws ssm put-parameter --name "/ai-news/vapid-private-key" --value "<PRIVATE_KEY>" --type SecureString --overwrite --region us-west-2
+```
+
+Then redeploy with `./deploy.sh`.
+
+---
+
 ## API reference
 
 | Method | Path | Description |
@@ -163,6 +196,9 @@ deploy.sh          # one-command deploy script
 | `GET` | `/api/feed/xml` | RSS 2.0 feed |
 | `POST` | `/api/refresh` | Runs the full fetch → filter → summarize pipeline |
 | `GET` | `/api/cron-status` | Returns cron scheduler state |
+| `GET` | `/api/push/vapid-public-key` | Returns VAPID public key for push subscription |
+| `POST` | `/api/push/subscribe` | Save a push subscription |
+| `DELETE` | `/api/push/unsubscribe` | Remove a push subscription |
 
 ### Cron status response
 
