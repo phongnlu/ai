@@ -25,8 +25,8 @@ export async function runPipeline(): Promise<Article[]> {
   await saveArticles(summarized);
   console.log(`[pipeline] Saved ${summarized.length} articles`);
 
-  // Send push notification for each new article
-  const newArticles = summarized.filter((a) => !previousIds.has(a.id));
+  // Send push notification for each new article (cap at 5 most recent)
+  const newArticles = summarized.filter((a) => !previousIds.has(a.id)).slice(0, 5);
   for (const article of newArticles) {
     await sendPushToAll({
       title: article.source,
