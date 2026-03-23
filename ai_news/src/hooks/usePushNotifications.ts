@@ -38,10 +38,11 @@ export function usePushNotifications() {
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(key).buffer as ArrayBuffer,
       });
+      const language = localStorage.getItem('language') ?? 'en';
       await fetch('/api/push/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(sub.toJSON()),
+        body: JSON.stringify({ ...sub.toJSON(), language }),
       });
       setState('subscribed');
     } catch (err) {

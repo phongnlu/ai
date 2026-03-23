@@ -47,6 +47,7 @@ export async function saveArticles(articles: Article[]): Promise<void> {
 export interface PushSubscriptionRecord {
   endpoint: string;
   keys: { p256dh: string; auth: string };
+  language?: string;
 }
 
 export async function loadSubscriptions(): Promise<PushSubscriptionRecord[]> {

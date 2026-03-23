@@ -1,8 +1,20 @@
 # AI News
 
-A Next.js news feed that crawls RSS sources, filters and summarizes articles with Claude, and serves them in a clean UI with search, category filters, and bookmarks.
+A Next.js news feed that crawls RSS sources, filters and summarizes articles with Claude, and serves them in a clean UI with search, category filters, brand filters, bookmarks, dark mode, PWA install, push notifications, and multilingual translation.
 
 **Live:** https://ai-news.onesolution365.com
+
+## Features
+
+- **Feed** — paginated article cards with search, category tabs, brand filters (Claude Code, Anthropic, ChatGPT, Gemini, Codex), infinite scroll
+- **AI pipeline** — fetch → keyword filter → Claude summarize & categorize → save → RSS feed, runs hourly via cron
+- **Translation** — EN / 中文 / Tiếng Việt via Google Translate; feed cards, article detail, and related articles all translate; preference persisted in localStorage
+- **Push notifications** — browser push per new article, delivered in the subscriber's saved language
+- **PWA** — installable, home screen icon, offline-capable service worker
+- **Dark mode** — auto follows OS preference, manual override persisted
+- **Bookmarks** — localStorage-backed saved articles
+
+---
 
 ## How it works
 
@@ -138,15 +150,31 @@ src/
     api/feed/      # GET  /api/feed           — paginated article feed
     api/feed/xml/  # GET  /api/feed/xml       — RSS feed
     api/refresh/   # POST /api/refresh        — trigger pipeline manually
-    api/cron-status/ # GET /api/cron-status   — cron scheduler state
-    article/[id]/  # article detail page
-    bookmarks/     # saved bookmarks page
-  components/      # UI components
-  config/          # env vars, RSS source list
-  hooks/           # useBookmarks, useTheme
+    api/cron-status/   # GET  /api/cron-status       — cron scheduler state
+    api/translate/     # POST /api/translate          — Google Translate proxy
+    api/push/          # push subscribe/unsubscribe/vapid-public-key
+    article/[id]/      # article detail page (SSR + client translation)
+    bookmarks/         # saved bookmarks page
+  components/
+    ArticleCard.tsx         # feed card with translation shimmer
+    ArticleTranslated.tsx   # article detail title + summary + related (translated)
+    BrandFilter.tsx         # brand pills: Claude Code, Anthropic, ChatGPT, Gemini, Codex
+    CategoryFilter.tsx      # category tab filter
+    FeedHeader.tsx          # sticky header: logo, search row, nav
+    LanguageSelector.tsx    # EN / 中文 / Tiếng Việt dropdown
+    PWAInstallBanner.tsx    # bottom install prompt (dismissible)
+    PushNotificationButton.tsx
+    SearchBar.tsx
+    ThemeToggle.tsx
+    Toast.tsx
+  config/
+    sources.ts     # 11 RSS sources (Anthropic, OpenAI, DeepMind, HN queries…)
+    env.ts         # environment variable exports
+  hooks/           # useBookmarks, useTheme, usePushNotifications
   lib/
     storage.ts     # S3/fs abstraction (S3 in prod, local file in dev)
     cronStatus.ts  # in-memory cron run state
+    webPush.ts     # send push notifications with per-subscriber translation
   types/
     article.ts     # Article and FeedResponse types
   instrumentation.ts  # starts pipeline cron on server startup (prod only)
@@ -167,7 +195,9 @@ Visit https://ai-news.onesolution365.com in Chrome/Edge and click **Install** in
 
 ### Push notifications
 
-Click the **bell icon** in the header to subscribe. The browser will prompt for notification permission. Once granted, you'll receive a notification whenever the pipeline publishes new articles (runs hourly).
+Click the **bell icon** in the header to subscribe. The browser will prompt for notification permission. Once granted, you'll receive a push notification per new article whenever the pipeline runs (hourly). Notifications are delivered in your selected language (EN / 中文 / Tiếng Việt).
+
+To unsubscribe, click the bell icon again. If you change your language preference, re-subscribe so the new language is saved with your subscription.
 
 To unsubscribe, click the bell icon again.
 
@@ -196,6 +226,7 @@ Then redeploy with `./deploy.sh`.
 | `GET` | `/api/feed/xml` | RSS 2.0 feed |
 | `POST` | `/api/refresh` | Runs the full fetch → filter → summarize pipeline |
 | `GET` | `/api/cron-status` | Returns cron scheduler state |
+| `POST` | `/api/translate` | Translate article titles & summaries via Google Translate. Body: `{articles, targetLang}` |
 | `GET` | `/api/push/vapid-public-key` | Returns VAPID public key for push subscription |
 | `POST` | `/api/push/subscribe` | Save a push subscription |
 | `DELETE` | `/api/push/unsubscribe` | Remove a push subscription |
