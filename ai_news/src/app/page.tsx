@@ -23,9 +23,9 @@ function HomePage() {
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [category, setCategory] = useState(() => searchParams.get('category') ?? 'all');
-  const [search, setSearch] = useState(() => searchParams.get('q') ?? '');
-  const [brand, setBrand] = useState(() => searchParams.get('brand') ?? '');
+  const [category, setCategory] = useState(() => searchParams.get('category') ?? (typeof window !== 'undefined' ? localStorage.getItem('filter_category') : null) ?? 'all');
+  const [search, setSearch] = useState(() => searchParams.get('q') ?? (typeof window !== 'undefined' ? localStorage.getItem('filter_search') : null) ?? '');
+  const [brand, setBrand] = useState(() => searchParams.get('brand') ?? (typeof window !== 'undefined' ? localStorage.getItem('filter_brand') : null) ?? '');
   const [language, setLanguage] = useState<Language>('en');
   const [translations, setTranslations] = useState<Record<string, { title: string; summary: string }>>({});
   const [translating, setTranslating] = useState(false);
@@ -61,6 +61,10 @@ function HomePage() {
     if (brand) params.set('brand', brand);
     const qs = params.toString();
     router.replace(qs ? `/?${qs}` : '/', { scroll: false });
+    // Persist filters so they survive PWA kill/relaunch
+    localStorage.setItem('filter_category', category);
+    localStorage.setItem('filter_search', search);
+    localStorage.setItem('filter_brand', brand);
   }, [category, search, brand, fetchFeed]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadMore = useCallback(() => {
@@ -87,6 +91,18 @@ function HomePage() {
     const saved = localStorage.getItem('language') as Language | null;
     if (saved && saved !== 'en') setLanguage(saved);
   }, []);
+
+  // Refresh feed when app is reopened (PWA / tab refocus)
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        setPage(1);
+        fetchFeed(1, category, search, brand);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, [category, search, brand, fetchFeed]);
 
   // Fetch translations when language or articles change
   useEffect(() => {
