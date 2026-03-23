@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import ArticleActions from '@/components/ArticleActions';
 import ArticleTranslated from '@/components/ArticleTranslated';
 import BackButton from '@/components/BackButton';
@@ -14,7 +14,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 export default async function ArticlePage({ params }: { params: { id: string } }) {
   const articles = await loadArticles();
   const article = articles.find((a) => a.id === params.id);
-  if (!article) notFound();
+  if (!article) redirect('/');
 
   const related = articles
     .filter((a) => a.id !== article.id && a.category === article.category)

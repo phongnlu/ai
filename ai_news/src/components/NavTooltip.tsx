@@ -1,29 +1,33 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 
 interface NavTooltipProps {
   label: string;
   children: React.ReactNode;
   show?: boolean;
   align?: 'center' | 'right';
+  onAdvance?: () => void;
 }
 
-export default function NavTooltip({ label, children, show = false, align = 'center' }: NavTooltipProps) {
+export default function NavTooltip({ label, children, show = false, align = 'center', onAdvance }: NavTooltipProps) {
   const [hovered, setHovered] = useState(false);
   const visible = show || hovered;
 
-  const tooltipPos = align === 'right'
-    ? 'right-0'
-    : 'left-1/2 -translate-x-1/2';
-  const arrowPos = align === 'right'
-    ? 'right-3'
-    : 'left-1/2 -translate-x-1/2';
+  const tooltipPos = align === 'right' ? 'right-0' : 'left-1/2 -translate-x-1/2';
+  const arrowPos = align === 'right' ? 'right-3' : 'left-1/2 -translate-x-1/2';
+
+  const handleTap = () => {
+    setHovered(false);
+    if (show && onAdvance) onAdvance();
+  };
 
   return (
     <div
       className="relative flex items-center"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onTouchStart={handleTap}
+      onClick={show ? onAdvance : undefined}
     >
       {children}
       <div

@@ -37,6 +37,17 @@ export default function FeedHeader({ search, onSearchChange, onSearchClear, lang
     return () => clearTimeout(t);
   }, [guideStep]);
 
+  const advance = () => {
+    const STEPS = 4;
+    const next = guideStep + 1;
+    if (next >= STEPS) {
+      localStorage.setItem('nav-guide-seen', '1');
+      setGuideStep(-1);
+    } else {
+      setGuideStep(next);
+    }
+  };
+
   return (
     <header className="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b border-gray-200 dark:border-gray-700">
       <div className="max-w-6xl mx-auto px-4 sm:px-8">
@@ -45,10 +56,10 @@ export default function FeedHeader({ search, onSearchChange, onSearchClear, lang
             AI&nbsp;News
           </Link>
           <nav className="flex items-center gap-2">
-            <NavTooltip label="Change language" show={guideStep === 0}>
+            <NavTooltip label="Change language" show={guideStep === 0} onAdvance={advance}>
               <LanguageSelector active={language} onChange={onLanguageChange} />
             </NavTooltip>
-            <NavTooltip label="Saved bookmarks" show={guideStep === 1}>
+            <NavTooltip label="Saved bookmarks" show={guideStep === 1} onAdvance={advance}>
               <Link
                 href="/bookmarks"
                 aria-label="Saved bookmarks"
@@ -59,10 +70,10 @@ export default function FeedHeader({ search, onSearchChange, onSearchClear, lang
                 </svg>
               </Link>
             </NavTooltip>
-            <NavTooltip label="Push notifications" show={guideStep === 2}>
+            <NavTooltip label="Push notifications" show={guideStep === 2} onAdvance={advance}>
               <PushNotificationButton />
             </NavTooltip>
-            <NavTooltip label="Toggle dark mode" show={guideStep === 3} align="right">
+            <NavTooltip label="Toggle dark mode" show={guideStep === 3} align="right" onAdvance={advance}>
               <ThemeToggle />
             </NavTooltip>
           </nav>
