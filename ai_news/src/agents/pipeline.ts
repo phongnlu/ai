@@ -21,12 +21,16 @@ export async function runPipeline(): Promise<Article[]> {
   const summarized = await summarizeArticles(filtered);
   console.log(`[pipeline] Summarized ${summarized.length} articles`);
 
-  await buildRssFeed(summarized);
-  await saveArticles(summarized);
+  const sorted = summarized.sort(
+    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  );
+
+  await buildRssFeed(sorted);
+  await saveArticles(sorted);
   console.log(`[pipeline] Saved ${summarized.length} articles`);
 
   // Send push notification for each new article (cap at 5 most recent)
-  const newArticles = summarized.filter((a) => !previousIds.has(a.id)).slice(0, 5);
+  const newArticles = sorted.filter((a) => !previousIds.has(a.id)).slice(0, 5);
   for (const article of newArticles) {
     await sendPushToAll({
       title: article.source,
@@ -38,5 +42,5 @@ export async function runPipeline(): Promise<Article[]> {
     console.log(`[pipeline] Push sent for ${newArticles.length} new articles`);
   }
 
-  return summarized;
+  return sorted;
 }
