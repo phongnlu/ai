@@ -59,7 +59,7 @@ export default function FeedHeader({ search, onSearchChange, onSearchClear, lang
             <NavTooltip label="Change language" show={guideStep === 0} onAdvance={advance}>
               <LanguageSelector active={language} onChange={onLanguageChange} />
             </NavTooltip>
-            <NavTooltip label="Saved bookmarks" show={guideStep === 1} onAdvance={advance}>
+            <NavTooltip label="Saved bookmarks" show={guideStep === 1} onAdvance={advance} hoverDisabled>
               <Link
                 href="/bookmarks"
                 aria-label="Saved bookmarks"
@@ -70,12 +70,8 @@ export default function FeedHeader({ search, onSearchChange, onSearchClear, lang
                 </svg>
               </Link>
             </NavTooltip>
-            <NavTooltip label="Push notifications" show={guideStep === 2} onAdvance={advance}>
-              <PushNotificationButton />
-            </NavTooltip>
-            <NavTooltip label="Toggle dark mode" show={guideStep === 3} align="right" onAdvance={advance}>
-              <ThemeToggle />
-            </NavTooltip>
+            <PushNotificationButton showTooltip={guideStep === 2} onTooltipAdvance={advance} />
+            <ThemeToggle showTooltip={guideStep === 3} onTooltipAdvance={advance} />
           </nav>
         </div>
         <div className="pb-2">

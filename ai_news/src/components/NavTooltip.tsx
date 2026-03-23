@@ -7,11 +7,12 @@ interface NavTooltipProps {
   show?: boolean;
   align?: 'center' | 'right';
   onAdvance?: () => void;
+  hoverDisabled?: boolean;
 }
 
-export default function NavTooltip({ label, children, show = false, align = 'center', onAdvance }: NavTooltipProps) {
+export default function NavTooltip({ label, children, show = false, align = 'center', onAdvance, hoverDisabled = false }: NavTooltipProps) {
   const [hovered, setHovered] = useState(false);
-  const visible = show || hovered;
+  const visible = show || (!hoverDisabled && hovered);
 
   const tooltipPos = align === 'right' ? 'right-0' : 'left-1/2 -translate-x-1/2';
   const arrowPos = align === 'right' ? 'right-3' : 'left-1/2 -translate-x-1/2';
