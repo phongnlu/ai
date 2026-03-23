@@ -18,6 +18,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                var t = localStorage.getItem('theme');
+                var dark = t === 'dark' || (!t || t === 'system') && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (dark) document.documentElement.classList.add('dark');
+                if (!t || t === 'system') {
+                  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+                    if ((localStorage.getItem('theme') || 'system') === 'system') {
+                      document.documentElement.classList.toggle('dark', e.matches);
+                    }
+                  });
+                }
+              })();
+            `,
+          }}
+        />
       </head>
       <body className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-200">
         {children}
