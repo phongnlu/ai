@@ -1,5 +1,6 @@
 'use client';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Article, FeedResponse } from '@/types/article';
 import FeedHeader from '@/components/FeedHeader';
 import CategoryFilter from '@/components/CategoryFilter';
@@ -12,7 +13,9 @@ import { Language } from '@/components/LanguageSelector';
 
 interface ToastState { message: string; type: 'success' | 'info' | 'error'; id: number; }
 
-export default function HomePage() {
+function HomePage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [articles, setArticles] = useState<Article[]>([]);
   const [total, setTotal] = useState(0);
   const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
@@ -20,9 +23,9 @@ export default function HomePage() {
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [category, setCategory] = useState('all');
-  const [search, setSearch] = useState('');
-  const [brand, setBrand] = useState('');
+  const [category, setCategory] = useState(() => searchParams.get('category') ?? 'all');
+  const [search, setSearch] = useState(() => searchParams.get('q') ?? '');
+  const [brand, setBrand] = useState(() => searchParams.get('brand') ?? '');
   const [language, setLanguage] = useState<Language>('en');
   const [translations, setTranslations] = useState<Record<string, { title: string; summary: string }>>({});
   const [translating, setTranslating] = useState(false);
@@ -51,7 +54,14 @@ export default function HomePage() {
   useEffect(() => {
     setPage(1);
     fetchFeed(1, category, search, brand);
-  }, [category, search, brand, fetchFeed]);
+    // Sync filters to URL so back button restores state
+    const params = new URLSearchParams();
+    if (category && category !== 'all') params.set('category', category);
+    if (search) params.set('q', search);
+    if (brand) params.set('brand', brand);
+    const qs = params.toString();
+    router.replace(qs ? `/?${qs}` : '/', { scroll: false });
+  }, [category, search, brand, fetchFeed]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadMore = useCallback(() => {
     if (loadingMore || !hasMore) return;
@@ -176,5 +186,13 @@ export default function HomePage() {
         ))}
       </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense>
+      <HomePage />
+    </Suspense>
   );
 }

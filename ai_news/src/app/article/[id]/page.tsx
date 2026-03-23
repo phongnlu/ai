@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ArticleActions from '@/components/ArticleActions';
 import ArticleTranslated from '@/components/ArticleTranslated';
+import BackButton from '@/components/BackButton';
 import { loadArticles } from '@/lib/storage';
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -28,9 +28,7 @@ export default async function ArticlePage({ params }: { params: { id: string } }
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-4">
         <div className="max-w-3xl mx-auto">
-          <Link href="/" className="text-blue-600 dark:text-blue-400 text-sm hover:underline">
-            ← Back to Feed
-          </Link>
+          <BackButton />
         </div>
       </header>
 
