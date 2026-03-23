@@ -1,6 +1,6 @@
 # AI News
 
-A Next.js news feed that crawls RSS sources, filters and summarizes articles with Claude, and serves them in a clean UI with search, category filters, brand filters, bookmarks, dark mode, PWA install, push notifications, and multilingual translation.
+A curated AI news reader that crawls RSS sources, filters and summarizes articles with Claude, and serves them in a clean UI with search, category filters, brand filters, bookmarks, dark mode, PWA install, push notifications, and multilingual translation.
 
 **Live:** https://ai-news.onesolution365.com
 
