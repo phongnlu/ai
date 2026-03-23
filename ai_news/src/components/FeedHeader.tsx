@@ -56,7 +56,7 @@ export default function FeedHeader({ search, onSearchChange, onSearchClear, lang
             AI&nbsp;News
           </Link>
           <nav className="flex items-center gap-2">
-            <NavTooltip label="Change language" show={guideStep === 0} onAdvance={advance}>
+            <NavTooltip label="Change language" show={guideStep === 0} onAdvance={advance} hoverDisabled>
               <LanguageSelector active={language} onChange={onLanguageChange} />
             </NavTooltip>
             <NavTooltip label="Saved bookmarks" show={guideStep === 1} onAdvance={advance} hoverDisabled>
