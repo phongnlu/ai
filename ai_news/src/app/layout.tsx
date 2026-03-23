@@ -22,14 +22,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
+                var mq = window.matchMedia('(prefers-color-scheme: dark)');
+                function applyAuto() {
+                  if ((localStorage.getItem('theme') || 'system') === 'system') {
+                    document.documentElement.classList.toggle('dark', mq.matches);
+                  }
+                }
                 var t = localStorage.getItem('theme');
-                var dark = t === 'dark' || (!t || t === 'system') && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (dark) document.documentElement.classList.add('dark');
-                if (!t || t === 'system') {
-                  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
-                    if ((localStorage.getItem('theme') || 'system') === 'system') {
-                      document.documentElement.classList.toggle('dark', e.matches);
-                    }
+                if (t === 'dark') {
+                  document.documentElement.classList.add('dark');
+                } else if (!t || t === 'system') {
+                  if (mq.matches) document.documentElement.classList.add('dark');
+                  // addEventListener with addListener fallback for older iOS
+                  try { mq.addEventListener('change', applyAuto); }
+                  catch(e) { try { mq.addListener(applyAuto); } catch(e2) {} }
+                  // Re-check when PWA is foregrounded (iOS doesn't fire change event while backgrounded)
+                  document.addEventListener('visibilitychange', function() {
+                    if (document.visibilityState === 'visible') applyAuto();
                   });
                 }
               })();

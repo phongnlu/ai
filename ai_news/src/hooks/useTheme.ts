@@ -31,8 +31,15 @@ export function useTheme() {
       const current = (localStorage.getItem(STORAGE_KEY) as Theme) ?? 'system';
       if (current === 'system') applyTheme('system');
     };
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
+    const visHandler = () => { if (document.visibilityState === 'visible') handler(); };
+    try { mq.addEventListener('change', handler); }
+    catch { try { (mq as unknown as { addListener: (h: () => void) => void }).addListener(handler); } catch { /* noop */ } }
+    document.addEventListener('visibilitychange', visHandler);
+    return () => {
+      try { mq.removeEventListener('change', handler); }
+      catch { try { (mq as unknown as { removeListener: (h: () => void) => void }).removeListener(handler); } catch { /* noop */ } }
+      document.removeEventListener('visibilitychange', visHandler);
+    };
   }, []);
 
   const setAndPersist = (t: Theme) => {
