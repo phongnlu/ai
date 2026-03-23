@@ -3,14 +3,17 @@ import Link from 'next/link';
 import SearchBar from './SearchBar';
 import ThemeToggle from './ThemeToggle';
 import PushNotificationButton from './PushNotificationButton';
+import LanguageSelector, { Language } from './LanguageSelector';
 
 interface FeedHeaderProps {
   search: string;
   onSearchChange: (val: string) => void;
   onSearchClear: () => void;
+  language: Language;
+  onLanguageChange: (lang: Language) => void;
 }
 
-export default function FeedHeader({ search, onSearchChange, onSearchClear }: FeedHeaderProps) {
+export default function FeedHeader({ search, onSearchChange, onSearchClear, language, onLanguageChange }: FeedHeaderProps) {
   return (
     <header className="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b border-gray-200 dark:border-gray-700">
       <div className="max-w-6xl mx-auto px-4 sm:px-8">
@@ -19,6 +22,7 @@ export default function FeedHeader({ search, onSearchChange, onSearchClear }: Fe
             AI News
           </Link>
           <nav className="flex items-center gap-2">
+            <LanguageSelector active={language} onChange={onLanguageChange} />
             <Link
               href="/bookmarks"
               aria-label="Saved bookmarks"

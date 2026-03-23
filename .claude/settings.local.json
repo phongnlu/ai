@@ -35,7 +35,11 @@
       "Bash(node -e \":*)",
       "Bash(npx playwright:*)",
       "Bash(PYTHONPATH=\"\" /usr/local/bin/aws apprunner describe-service --service-arn \"arn:aws:apprunner:us-west-2:934174848828:service/ai-news/012b30d5e62d4c389227447e86c07398\" --region us-west-2 --query \"Service.{Status:Status,UpdatedAt:UpdatedAt}\")",
-      "Bash(PYTHONPATH=\"\" /usr/local/bin/aws apprunner wait service-running --service-arn \"arn:aws:apprunner:us-west-2:934174848828:service/ai-news/012b30d5e62d4c389227447e86c07398\" --region us-west-2)"
+      "Bash(PYTHONPATH=\"\" /usr/local/bin/aws apprunner wait service-running --service-arn \"arn:aws:apprunner:us-west-2:934174848828:service/ai-news/012b30d5e62d4c389227447e86c07398\" --region us-west-2)",
+      "Bash(curl -s -X POST http://localhost:3000/api/translate -H \"Content-Type: application/json\" -d '{\"\"articles\"\":[{\"\"id\"\":\"\"test1\"\",\"\"title\"\":\"\"OpenAI releases new model\"\",\"\"summary\"\":\"\"OpenAI has released a new AI model.\"\"}],\"\"targetLang\"\":\"\"zh\"\"}')",
+      "Bash(curl -s \"https://api.mymemory.translated.net/get?q=Hello+World&langpair=en|zh-CN\")",
+      "Bash(python3 -m json.tool)",
+      "Bash(curl -s \"https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=zh-CN&dt=t&q=Hello+World\")"
     ]
   }
 }

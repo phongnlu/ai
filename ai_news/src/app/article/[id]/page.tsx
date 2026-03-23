@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ArticleActions from '@/components/ArticleActions';
+import ArticleTranslated from '@/components/ArticleTranslated';
 import { loadArticles } from '@/lib/storage';
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -38,9 +39,13 @@ export default async function ArticlePage({ params }: { params: { id: string } }
           {article.category}
         </span>
 
-        <h1 className="mt-4 text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 leading-tight">
-          {article.title}
-        </h1>
+        <ArticleTranslated
+          articleId={article.id}
+          sourceUrl={article.sourceUrl}
+          title={article.title}
+          summary={article.summary}
+          related={related.map((r) => ({ id: r.id, sourceUrl: r.sourceUrl, title: r.title, source: r.source }))}
+        />
 
         <div className="mt-3 text-sm text-gray-500 dark:text-gray-400 flex flex-wrap gap-2">
           <span>{article.source}</span>
@@ -49,33 +54,7 @@ export default async function ArticlePage({ params }: { params: { id: string } }
           {article.readTimeMinutes > 0 && <><span>·</span><span>{article.readTimeMinutes} min read</span></>}
         </div>
 
-        {/* AI Summary card */}
-        <div className="mt-8 p-5 border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-950/40 rounded-r-lg">
-          <p className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-2">
-            AI Summary
-          </p>
-          <p className="text-gray-700 dark:text-gray-200 leading-relaxed">{article.summary}</p>
-        </div>
-
         <ArticleActions articleId={article.id} sourceUrl={article.sourceUrl} />
-
-        {related.length > 0 && (
-          <section className="mt-12">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Related Articles</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {related.map((r) => (
-                <Link
-                  key={r.id}
-                  href={`/article/${r.id}`}
-                  className="block p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:shadow-md transition-shadow"
-                >
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100 line-clamp-2">{r.title}</p>
-                  <p className="mt-1 text-xs text-gray-500">{r.source}</p>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
       </main>
     </div>
   );

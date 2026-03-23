@@ -21,9 +21,14 @@ interface ArticleCardProps {
   article: Article;
   isBookmarked: boolean;
   onBookmarkToggle: (id: string) => void;
+  translation?: { title: string; summary: string };
+  translating?: boolean;
 }
 
-export default function ArticleCard({ article, isBookmarked, onBookmarkToggle }: ArticleCardProps) {
+export default function ArticleCard({ article, isBookmarked, onBookmarkToggle, translation, translating }: ArticleCardProps) {
+  const title = translation?.title ?? article.title;
+  const summary = translation?.summary ?? article.summary;
+  const pending = translating && !translation;
   return (
     <article className="relative flex flex-col rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 overflow-hidden">
       <Link href={`/article/${article.id}`} className="flex flex-col flex-1 p-5">
@@ -38,13 +43,28 @@ export default function ArticleCard({ article, isBookmarked, onBookmarkToggle }:
           )}
         </div>
 
-        <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 mb-2 leading-snug">
-          {article.title}
-        </h2>
+        {pending ? (
+          <div className="mb-2 space-y-2 animate-pulse">
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full" />
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/5" />
+          </div>
+        ) : (
+          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 line-clamp-2 mb-2 leading-snug">
+            {title}
+          </h2>
+        )}
 
-        <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-3 flex-1 mb-4">
-          {article.summary}
-        </p>
+        {pending ? (
+          <div className="flex-1 mb-4 space-y-2 animate-pulse">
+            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full" />
+            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full" />
+            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/5" />
+          </div>
+        ) : (
+          <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-3 flex-1 mb-4">
+            {summary}
+          </p>
+        )}
 
         <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
           <span className="font-medium truncate max-w-[60%]">{article.source}</span>

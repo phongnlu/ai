@@ -8,6 +8,7 @@ import ArticleCard from '@/components/ArticleCard';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
 import Toast from '@/components/Toast';
 import { useBookmarks } from '@/hooks/useBookmarks';
+import { Language } from '@/components/LanguageSelector';
 
 interface ToastState { message: string; type: 'success' | 'info' | 'error'; id: number; }
 
@@ -22,6 +23,9 @@ export default function HomePage() {
   const [category, setCategory] = useState('all');
   const [search, setSearch] = useState('');
   const [brand, setBrand] = useState('');
+  const [language, setLanguage] = useState<Language>('en');
+  const [translations, setTranslations] = useState<Record<string, { title: string; summary: string }>>({});
+  const [translating, setTranslating] = useState(false);
   const [toasts, setToasts] = useState<ToastState[]>([]);
   const { isBookmarked, addBookmark, removeBookmark } = useBookmarks();
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -68,6 +72,31 @@ export default function HomePage() {
     return () => observer.disconnect();
   }, [loadMore]);
 
+  // Restore saved language on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('language') as Language | null;
+    if (saved && saved !== 'en') setLanguage(saved);
+  }, []);
+
+  // Fetch translations when language or articles change
+  useEffect(() => {
+    if (language === 'en') { setTranslations({}); return; }
+    const untranslated = articles.filter((a) => !translations[a.sourceUrl || a.id]);
+    if (!untranslated.length) return;
+    setTranslating(true);
+    fetch('/api/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        articles: untranslated.map((a) => ({ id: a.id, sourceUrl: a.sourceUrl, title: a.title, summary: a.summary })),
+        targetLang: language,
+      }),
+    })
+      .then((r) => r.json())
+      .then(({ translations: t }) => setTranslations((prev) => ({ ...prev, ...t })))
+      .finally(() => setTranslating(false));
+  }, [language, articles]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const showToast = (message: string, type: ToastState['type']) => {
     const id = Date.now();
     setToasts((prev) => [...prev, { message, type, id }]);
@@ -89,6 +118,8 @@ export default function HomePage() {
         search={search}
         onSearchChange={setSearch}
         onSearchClear={() => setSearch('')}
+        language={language}
+        onLanguageChange={(lang) => { setLanguage(lang); localStorage.setItem('language', lang); setTranslations({}); }}
       />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-8 py-6">
@@ -115,6 +146,8 @@ export default function HomePage() {
                   article={a}
                   isBookmarked={isBookmarked(a.id)}
                   onBookmarkToggle={handleBookmark}
+                  translation={translations[a.sourceUrl || a.id]}
+                  translating={translating && language !== 'en'}
                 />
               ))}
             </div>

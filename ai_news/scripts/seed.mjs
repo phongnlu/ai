@@ -10,10 +10,10 @@
  * - Saves to data/articles.json and public/feed.xml
  */
 
-import { createRequire } from 'module';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { randomUUID } from 'crypto';
 import Anthropic from '@anthropic-ai/sdk';
 import RSSParser from 'rss-parser';
 
@@ -81,7 +81,7 @@ async function fetchAll() {
         seen.add(url);
         if (score(item.title ?? '', item.contentSnippet ?? '') < 1) continue;
         articles.push({
-          id: Buffer.from(url).toString('base64url').slice(0, 16),
+          id: randomUUID(),
           title: item.title ?? 'Untitled',
           rawSnippet: item.contentSnippet ?? item.content ?? '',
           source: src.name,
