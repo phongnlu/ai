@@ -46,6 +46,7 @@ export default function BookmarksPage() {
                 article={a}
                 isBookmarked={true}
                 onBookmarkToggle={() => removeBookmark(a.sourceUrl)}
+                href={`/article/${a.id}?src=${encodeURIComponent(a.sourceUrl)}`}
               />
             ))}
           </div>

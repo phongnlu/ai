@@ -2,9 +2,19 @@ import { redirect } from 'next/navigation';
 import ArticleView from '@/components/ArticleView';
 import { loadArticles } from '@/lib/storage';
 
-export default async function ArticlePage({ params }: { params: { id: string } }) {
+export default async function ArticlePage({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: { src?: string };
+}) {
   const articles = await loadArticles();
-  const article = articles.find((a) => a.id === params.id);
+  let article = articles.find((a) => a.id === params.id);
+  // Fallback: match by sourceUrl for stale bookmark IDs after pipeline re-runs
+  if (!article && searchParams.src) {
+    article = articles.find((a) => a.sourceUrl === decodeURIComponent(searchParams.src!));
+  }
   if (!article) redirect('/');
 
   const related = articles
