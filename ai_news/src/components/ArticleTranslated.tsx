@@ -16,17 +16,12 @@ interface Props {
   title: string;
   summary: string;
   related?: RelatedArticle[];
+  language: Language;
 }
 
-export default function ArticleTranslated({ articleId, sourceUrl, title, summary, related = [] }: Props) {
-  const [language, setLanguage] = useState<Language>('en');
+export default function ArticleTranslated({ articleId, sourceUrl, title, summary, related = [], language }: Props) {
   const [translations, setTranslations] = useState<Record<string, { title: string; summary: string }>>({});
   const [translating, setTranslating] = useState(false);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('language') as Language | null;
-    if (saved && saved !== 'en') setLanguage(saved);
-  }, []);
 
   useEffect(() => {
     if (language === 'en') { setTranslations({}); return; }

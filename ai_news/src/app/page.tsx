@@ -129,11 +129,13 @@ function HomePage() {
   };
 
   const handleBookmark = (id: string) => {
-    if (isBookmarked(id)) {
-      removeBookmark(id);
+    const article = articles.find((a) => a.id === id);
+    if (!article) return;
+    if (isBookmarked(article.sourceUrl)) {
+      removeBookmark(article.sourceUrl);
       showToast('Article removed from bookmarks', 'info');
     } else {
-      addBookmark(id);
+      addBookmark(article);
       showToast('Article saved to bookmarks', 'success');
     }
   };
@@ -170,7 +172,7 @@ function HomePage() {
                 <ArticleCard
                   key={a.id}
                   article={a}
-                  isBookmarked={isBookmarked(a.id)}
+                  isBookmarked={isBookmarked(a.sourceUrl)}
                   onBookmarkToggle={handleBookmark}
                   translation={translations[a.sourceUrl || a.id]}
                   translating={translating && language !== 'en'}

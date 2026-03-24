@@ -1,10 +1,11 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
+import { Article } from '@/types/article';
 
 const STORAGE_KEY = 'ai-news-bookmarks';
 
 export function useBookmarks() {
-  const [bookmarks, setBookmarks] = useState<string[]>([]);
+  const [bookmarks, setBookmarks] = useState<Article[]>([]);
 
   useEffect(() => {
     try {
@@ -13,29 +14,29 @@ export function useBookmarks() {
     } catch {}
   }, []);
 
-  const persist = (ids: string[]) => {
-    setBookmarks(ids);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+  const persist = (articles: Article[]) => {
+    setBookmarks(articles);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(articles));
   };
 
-  const addBookmark = useCallback((id: string) => {
+  const addBookmark = useCallback((article: Article) => {
     setBookmarks((prev) => {
-      if (prev.includes(id)) return prev;
-      const next = [...prev, id];
+      if (prev.some((a) => a.sourceUrl === article.sourceUrl)) return prev;
+      const next = [...prev, article];
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
       return next;
     });
   }, []);
 
-  const removeBookmark = useCallback((id: string) => {
+  const removeBookmark = useCallback((sourceUrl: string) => {
     setBookmarks((prev) => {
-      const next = prev.filter((b) => b !== id);
+      const next = prev.filter((a) => a.sourceUrl !== sourceUrl);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
       return next;
     });
   }, []);
 
-  const isBookmarked = useCallback((id: string) => bookmarks.includes(id), [bookmarks]);
+  const isBookmarked = useCallback((sourceUrl: string) => bookmarks.some((a) => a.sourceUrl === sourceUrl), [bookmarks]);
 
   const clearAll = useCallback(() => persist([]), []);
 
