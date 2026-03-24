@@ -10,7 +10,7 @@ export async function runPipeline(): Promise<Article[]> {
   console.log('[pipeline] Starting...');
 
   const previous = await loadArticles();
-  const previousIds = new Set(previous.map((a) => a.id));
+  const previousUrls = new Set(previous.map((a) => a.sourceUrl));
 
   const fetched = await fetchArticles();
   console.log(`[pipeline] Fetched ${fetched.length} articles`);
@@ -30,7 +30,7 @@ export async function runPipeline(): Promise<Article[]> {
   console.log(`[pipeline] Saved ${summarized.length} articles`);
 
   // Send push notification for each new article (cap at 5 most recent)
-  const newArticles = sorted.filter((a) => !previousIds.has(a.id)).slice(0, 5);
+  const newArticles = sorted.filter((a) => !previousUrls.has(a.sourceUrl)).slice(0, 5);
   for (const article of newArticles) {
     await sendPushToAll({
       title: article.source,
