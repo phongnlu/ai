@@ -22,7 +22,7 @@ export function useBookmarks() {
   const addBookmark = useCallback((article: Article) => {
     setBookmarks((prev) => {
       if (prev.some((a) => a.sourceUrl === article.sourceUrl)) return prev;
-      const next = [...prev, article];
+      const next = [article, ...prev];
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
       return next;
     });
