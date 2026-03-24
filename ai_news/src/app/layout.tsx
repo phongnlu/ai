@@ -56,6 +56,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 window.addEventListener('load', () => {
                   navigator.serviceWorker.register('/sw.js');
                 });
+                function clearBadge() {
+                  if (document.visibilityState === 'visible') {
+                    navigator.serviceWorker.ready.then(function(reg) {
+                      reg.active && reg.active.postMessage('clear-badge');
+                    });
+                    if ('clearAppBadge' in navigator) navigator.clearAppBadge();
+                  }
+                }
+                document.addEventListener('visibilitychange', clearBadge);
+                clearBadge();
               }
             `,
           }}
