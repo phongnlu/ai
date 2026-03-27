@@ -35,7 +35,7 @@ export async function runPipeline(): Promise<Article[]> {
     await sendPushToAll({
       title: article.source,
       body: article.title,
-      url: `https://ai-news.onesolution365.com/article/${article.id}`,
+      url: `https://ai-news.onesolution365.com/article/${article.id}?src=${encodeURIComponent(article.sourceUrl)}`,
     });
   }
   if (newArticles.length > 0) {

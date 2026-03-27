@@ -22,7 +22,7 @@ export async function fetchArticles(): Promise<Article[]> {
             id: uuidv4(),
             title: item.title ?? 'Untitled',
             summary: item.contentSnippet ?? item.content ?? '',
-            category: 'product', // default; overridden by summarizeAgent
+            category: source.category,
             source: source.name,
             sourceUrl: url,
             publishedAt: item.pubDate

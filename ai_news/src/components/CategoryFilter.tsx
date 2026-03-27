@@ -1,9 +1,6 @@
 'use client';
 import { useRef } from 'react';
 
-const CATEGORIES = ['all', 'research', 'product', 'policy', 'open-source'] as const;
-type Cat = (typeof CATEGORIES)[number];
-
 interface CategoryFilterProps {
   active: string;
   counts: Record<string, number>;
@@ -11,25 +8,26 @@ interface CategoryFilterProps {
 }
 
 export default function CategoryFilter({ active, counts, onChange }: CategoryFilterProps) {
+  const categories = ['all', ...Object.keys(counts).filter((c) => c !== 'all').sort()];
   const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
     if (e.key === 'ArrowRight') {
       e.preventDefault();
-      const next = (index + 1) % CATEGORIES.length;
+      const next = (index + 1) % categories.length;
       buttonRefs.current[next]?.focus();
-      onChange(CATEGORIES[next]);
+      onChange(categories[next]);
     } else if (e.key === 'ArrowLeft') {
       e.preventDefault();
-      const prev = (index - 1 + CATEGORIES.length) % CATEGORIES.length;
+      const prev = (index - 1 + categories.length) % categories.length;
       buttonRefs.current[prev]?.focus();
-      onChange(CATEGORIES[prev]);
+      onChange(categories[prev]);
     }
   };
 
   return (
     <div role="tablist" aria-label="Filter by category" className="flex gap-1 overflow-x-auto pb-1 scrollbar-none">
-      {CATEGORIES.map((cat, i) => {
+      {categories.map((cat, i) => {
         const isActive = active === cat;
         const count = counts[cat] ?? 0;
         return (

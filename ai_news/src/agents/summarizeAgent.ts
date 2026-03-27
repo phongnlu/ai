@@ -1,8 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { Article, Category } from '@/types/article';
+import { Article } from '@/types/article';
 import { ANTHROPIC_API_KEY } from '@/config/env';
 
-const VALID_CATEGORIES: Category[] = ['research', 'product', 'policy', 'open-source'];
 
 const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
 
@@ -14,27 +13,23 @@ async function summarizeOne(article: Article): Promise<Article> {
       messages: [
         {
           role: 'user',
-          content: `Summarize this article in 2-3 sentences for a tech-savvy audience. Also classify it as one of: research, product, policy, open-source.
+          content: `Summarize this article in 2-3 sentences for a tech-savvy audience.
 
 Title: ${article.title}
 Content: ${article.summary.slice(0, 1000)}
 
-Respond with JSON only: {"summary": "...", "category": "..."}`,
+Respond with JSON only: {"summary": "..."}`,
         },
       ],
     });
 
     const raw = (msg.content[0] as { type: string; text: string }).text.trim();
     const json = JSON.parse(raw.replace(/^```json\n?|\n?```$/g, ''));
-    const category: Category = VALID_CATEGORIES.includes(json.category)
-      ? json.category
-      : 'product';
     const summary: string = json.summary ?? article.summary;
 
     return {
       ...article,
       summary,
-      category,
       readTimeMinutes: Math.max(1, Math.ceil(summary.split(' ').length / 200)),
     };
   } catch {
