@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install:*)",
+      "Bash(nvm install:*)",
+      "Bash(nvm use:*)",
+      "Bash(pnpm dev:*)",
+      "Bash(export NVM_DIR=\"$HOME/.nvm\")",
+      "Bash(source \"$NVM_DIR/nvm.sh\")",
+      "Bash(pnpm --filter web dev)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(pkill -f \"turbo run dev\")"
+    ]
+  }
+}
