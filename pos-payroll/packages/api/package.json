@@ -1,0 +1,29 @@
+{
+  "name": "@repo/api",
+  "version": "0.0.1",
+  "private": true,
+  "exports": {
+    "./client": "./src/client/index.ts",
+    "./models/*": "./src/models/*.ts",
+    "./lib/*": "./src/lib/*.ts"
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src/",
+    "db:seed": "tsx src/scripts/seed.ts"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "mongoose": "^8.4.1",
+    "@aws-sdk/client-s3": "^3.600.0",
+    "@aws-sdk/s3-request-presigner": "^3.600.0",
+    "expo-server-sdk": "^3.10.0"
+  },
+  "devDependencies": {
+    "@repo/config": "workspace:*",
+    "@repo/types": "workspace:*",
+    "@types/node": "^20.14.2",
+    "tsx": "^4.15.6",
+    "typescript": "^5.4.5"
+  }
+}

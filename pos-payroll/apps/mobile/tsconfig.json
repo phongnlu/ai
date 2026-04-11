@@ -1,0 +1,12 @@
+{
+  "extends": "@repo/config/typescript/react-native.json",
+  "compilerOptions": {
+    "paths": {
+      "@repo/ui": ["../../packages/ui/src/index.ts"],
+      "@repo/types/*": ["../../packages/types/src/*"],
+      "@repo/api/*": ["../../packages/api/src/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}
