@@ -16,7 +16,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
       <QueryClientProvider client={queryClient}>
-        <TamaguiProvider config={tamaguiConfig} defaultTheme="light">
+        <TamaguiProvider config={tamaguiConfig} defaultTheme="light" disableRootThemeClass disableInjectCSS>
           {children}
         </TamaguiProvider>
       </QueryClientProvider>

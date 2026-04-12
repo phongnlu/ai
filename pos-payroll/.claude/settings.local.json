@@ -9,7 +9,13 @@
       "Bash(source \"$NVM_DIR/nvm.sh\")",
       "Bash(pnpm --filter web dev)",
       "Bash(pkill -f \"next dev\")",
-      "Bash(pkill -f \"turbo run dev\")"
+      "Bash(pkill -f \"turbo run dev\")",
+      "Bash(sed -i '' \"s|import { authOptions } from ''../auth/\\\\[...nextauth\\\\]/route'';|import { authOptions } from ''@/lib/auth'';|g\" apps/web/src/app/api/employees/route.ts apps/web/src/app/api/pay-periods/route.ts apps/web/src/app/api/pay-stubs/route.ts)",
+      "Bash(sed -i '' \"s|import { authOptions } from ''../../auth/\\\\[...nextauth\\\\]/route'';|import { authOptions } from ''@/lib/auth'';|g\" apps/web/src/app/api/employees/[id]/route.ts)",
+      "Bash(sed -i '' \"s|import { authOptions } from ''../api/auth/\\\\[...nextauth\\\\]/route'';|import { authOptions } from ''@/lib/auth'';|g\" apps/web/src/app/\\\\\\(app\\\\\\)/layout.tsx apps/web/src/app/\\\\\\(app\\\\\\)/dashboard/page.tsx)",
+      "Bash(sed -i '' \"s|import { authOptions } from ''./api/auth/\\\\[...nextauth\\\\]/route'';|import { authOptions } from ''@/lib/auth'';|g\" apps/web/src/app/page.tsx)",
+      "Bash(openssl rand:*)",
+      "Bash(mkcert --version)"
     ]
   }
 }

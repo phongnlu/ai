@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/route';
-import { connectDB } from '@repo/api/src/lib/db';
-import { EmployeeModel } from '@repo/api/src/models/Employee';
+import { authOptions } from '@/lib/auth';
+import { connectDB } from '@repo/api/lib/db';
+import { EmployeeModel } from '@repo/api/models/Employee';
 import type { CreateEmployeeInput } from '@repo/types/src/employee';
 import type { PaginatedResponse } from '@repo/types/src/api';
 import type { Employee } from '@repo/types/src/employee';

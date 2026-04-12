@@ -12,3 +12,4 @@ ios/
 *.log
 .DS_Store
 coverage
+*.pem

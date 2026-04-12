@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route';
-import { connectDB } from '@repo/api/src/lib/db';
-import { EmployeeModel } from '@repo/api/src/models/Employee';
+import { authOptions } from '@/lib/auth';
+import { connectDB } from '@repo/api/lib/db';
+import { EmployeeModel } from '@repo/api/models/Employee';
 import type { UpdateEmployeeInput } from '@repo/types/src/employee';
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {

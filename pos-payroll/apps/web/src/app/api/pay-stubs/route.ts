@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/route';
-import { connectDB } from '@repo/api/src/lib/db';
-import { PayStubModel } from '@repo/api/src/models/PayStub';
+import { authOptions } from '@/lib/auth';
+import { connectDB } from '@repo/api/lib/db';
+import { PayStubModel } from '@repo/api/models/PayStub';
 import type { CreatePayStubInput } from '@repo/types/src/payroll';
 
 export async function GET(request: NextRequest) {
