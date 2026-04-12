@@ -15,7 +15,8 @@
       "Bash(sed -i '' \"s|import { authOptions } from ''../api/auth/\\\\[...nextauth\\\\]/route'';|import { authOptions } from ''@/lib/auth'';|g\" apps/web/src/app/\\\\\\(app\\\\\\)/layout.tsx apps/web/src/app/\\\\\\(app\\\\\\)/dashboard/page.tsx)",
       "Bash(sed -i '' \"s|import { authOptions } from ''./api/auth/\\\\[...nextauth\\\\]/route'';|import { authOptions } from ''@/lib/auth'';|g\" apps/web/src/app/page.tsx)",
       "Bash(openssl rand:*)",
-      "Bash(mkcert --version)"
+      "Bash(mkcert --version)",
+      "Bash(ls /Users/plu/Documents/phongnlu09212023/ai/pos-payroll/apps/web/.env*)"
     ]
   }
 }

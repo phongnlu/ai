@@ -13,9 +13,9 @@ Cross-platform employee payroll management for the State of California — avail
 | Layer | Technology |
 |---|---|
 | Monorepo | Turborepo |
-| Web | Next.js 14 (App Router) |
+| Web | Next.js 15 (App Router) |
 | Mobile | React Native + Expo SDK 51 |
-| Shared UI | Tamagui |
+| Shared UI | Tamagui (runtime only) |
 | State | Zustand + React Query |
 | API | REST (Next.js App Router) |
 | Auth | Google OAuth |
@@ -33,11 +33,13 @@ Cross-platform employee payroll management for the State of California — avail
 
 ```
 apps/
-  web/                  # Next.js 14 web app
+  web/                  # Next.js 15 web app
     src/app/
       (auth)/           # Sign-in screen
       (app)/            # Authenticated pages (dashboard, employees, payroll)
       api/              # REST route handlers
+    src/components/     # Sidebar, Header
+    src/lib/            # auth.ts (NextAuth config)
   mobile/               # Expo app (iOS + Android)
     app/
       (auth)/           # Auth screens
@@ -66,20 +68,25 @@ All packages are importable as `@repo/<name>` via pnpm workspace aliases.
 ## Getting Started
 
 ```bash
-# 1. Copy environment variables and fill in values
-cp .env.example .env.local
+# 1. Copy and fill in environment variables
+cp .env.example apps/web/.env.local
+# edit apps/web/.env.local with your values
 
-# 2. Install dependencies
+# 2. Generate HTTPS cert (one-time)
+brew install mkcert && mkcert -install
+cd apps/web && mkcert localhost && cd ../..
+
+# 3. Install dependencies
 pnpm install
 
-# 3. Start web + mobile simultaneously
+# 4. Start web + mobile simultaneously
 pnpm dev
 ```
 
 ### Run targets individually
 
 ```bash
-pnpm --filter web dev            # web only → http://localhost:3000
+pnpm --filter web dev            # web only → https://localhost:3000
 pnpm --filter mobile start       # Expo DevTools
 pnpm --filter mobile ios         # iOS simulator
 pnpm --filter mobile android     # Android emulator
@@ -101,7 +108,7 @@ pnpm --filter mobile android     # Android emulator
 | `GOOGLE_CLIENT_ID` | Yes | Google OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | Yes | Google OAuth client secret |
 | `NEXTAUTH_SECRET` | Yes | NextAuth signing secret |
-| `NEXTAUTH_URL` | Yes | App base URL (e.g. `http://localhost:3000`) |
+| `NEXTAUTH_URL` | Yes | App base URL (e.g. `https://localhost:3000`) |
 
 ### Mobile — `apps/mobile/.env`
 
@@ -272,4 +279,14 @@ cd apps/mobile/ios && pod install
 **pnpm workspace resolution errors**
 ```bash
 pnpm install --frozen-lockfile
+```
+
+**Next.js dev server 500 / missing build artifacts**
+```bash
+rm -rf apps/web/.next && pnpm --filter web dev
+```
+
+**HTTPS cert missing**
+```bash
+cd apps/web && mkcert localhost
 ```
