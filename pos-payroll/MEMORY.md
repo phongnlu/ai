@@ -122,6 +122,41 @@ Google OAuth redirect URI configured: `https://localhost:3000/api/auth/callback/
 
 ---
 
+## Deployment (AWS ECS Express Mode)
+
+**Express Mode** auto-provisions ALB, HTTPS, auto-scaling, VPC networking — no manual AWS networking setup.
+
+### Key files
+- `apps/web/Dockerfile` — 3-stage build (deps → builder → runner, Alpine)
+- `apps/web/.dockerignore`
+- `apps/web/src/app/api/health/route.ts` — `/health` endpoint for ECS container health check
+- `infra/setup-ecs.sh` — one-time AWS setup (ECR, cluster, IAM, SSM secrets, Express Mode service)
+- `.github/workflows/deploy-web.yml` — **manual trigger only** (`workflow_dispatch`)
+
+### Standalone build
+`next.config.js` enables `output: 'standalone'` only when `NEXT_BUILD_STANDALONE=true` (set in Dockerfile). This avoids breaking `next dev` (which fails if standalone artifacts are missing).
+
+### Deployment trigger
+No auto-deploy on push to main. Deploy via:
+```bash
+gh workflow run deploy-web.yml              # build + deploy
+gh workflow run deploy-web.yml -f skip_build=true   # redeploy :latest (rollback)
+gh workflow run deploy-web.yml -f image_tag=abc1234 # specific tag
+```
+
+### GitHub Actions variables required
+`AWS_REGION`, `ECR_REPOSITORY`, `ECS_CLUSTER`, `ECS_SERVICE`, `CONTAINER_NAME`, `TASK_DEFINITION` (all = `pos-payroll` except region)
+
+### GitHub Actions secrets required
+`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
+
+### Post-first-deploy
+- Copy HTTPS endpoint from ECS console
+- Update SSM `/pos-payroll/NEXTAUTH_URL` with the endpoint
+- Add endpoint to Google OAuth redirect URIs
+
+---
+
 ## Running locally
 
 ```bash

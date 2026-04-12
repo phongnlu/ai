@@ -51,6 +51,16 @@ Full Turborepo monorepo scaffolded from scratch. Web UI fully designed and funct
 - GOOGLE_CLIENT_SECRET — set
 - S3_BUCKET / AWS keys — not yet set
 
+## Deployment (AWS ECS Express Mode)
+
+- `apps/web/Dockerfile` — 3-stage Alpine build; `NEXT_BUILD_STANDALONE=true` activates standalone output
+- `apps/web/src/app/api/health/route.ts` — `/health` for ECS container health check
+- `infra/setup-ecs.sh` — one-time AWS provisioning (ECR, cluster, IAM, SSM secrets, Express Mode service)
+- `.github/workflows/deploy-web.yml` — **manual only** (`workflow_dispatch`), no auto-deploy on push
+
+Trigger: `gh workflow run deploy-web.yml` or GitHub UI → Actions → Run workflow.
+Options: `skip_build=true` (redeploy :latest), `image_tag=abc123` (specific tag).
+
 ## Running locally
 
 ```bash

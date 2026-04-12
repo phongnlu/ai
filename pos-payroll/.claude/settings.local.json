@@ -16,7 +16,10 @@
       "Bash(sed -i '' \"s|import { authOptions } from ''./api/auth/\\\\[...nextauth\\\\]/route'';|import { authOptions } from ''@/lib/auth'';|g\" apps/web/src/app/page.tsx)",
       "Bash(openssl rand:*)",
       "Bash(mkcert --version)",
-      "Bash(ls /Users/plu/Documents/phongnlu09212023/ai/pos-payroll/apps/web/.env*)"
+      "Bash(ls /Users/plu/Documents/phongnlu09212023/ai/pos-payroll/apps/web/.env*)",
+      "Bash(chmod:*)",
+      "WebSearch",
+      "WebFetch(domain:aws.amazon.com)"
     ]
   }
 }

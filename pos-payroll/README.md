@@ -23,7 +23,7 @@ Cross-platform employee payroll management for the State of California — avail
 | File storage | AWS S3 |
 | Push notifications | Expo Notifications + APNs/FCM |
 | CI/CD | GitHub Actions |
-| Web hosting | AWS ECS |
+| Web hosting | AWS ECS Express Mode |
 | Mobile builds | EAS Build |
 | OTA updates | EAS Update |
 
@@ -216,7 +216,53 @@ Credentials are managed by EAS Credentials — never stored in the repo.
 
 ## Web Deployment
 
-Push to `main` triggers an automatic deployment via GitHub Actions to AWS ECS.
+Deployments are **manual only** — triggered on demand via GitHub Actions. There is no auto-deploy on push.
+
+### One-time infrastructure setup
+
+```bash
+# Provisions ECR, ECS cluster, IAM role, SSM secrets, CloudWatch, Express Mode service
+./infra/setup-ecs.sh
+```
+
+ECS Express Mode automatically provisions the ALB, HTTPS endpoint, auto-scaling, and VPC networking — no manual AWS networking setup required.
+
+### Set GitHub Actions variables and secrets
+
+After running the setup script, configure these in repo **Settings → Variables**:
+
+| Variable | Value |
+|---|---|
+| `AWS_REGION` | `us-west-2` |
+| `ECR_REPOSITORY` | `pos-payroll` |
+| `ECS_CLUSTER` | `pos-payroll` |
+| `ECS_SERVICE` | `pos-payroll` |
+| `CONTAINER_NAME` | `pos-payroll` |
+| `TASK_DEFINITION` | `pos-payroll` |
+
+And in **Settings → Secrets**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`.
+
+### Trigger a deployment
+
+**GitHub UI:** `Actions → Deploy Web — AWS ECS Express Mode → Run workflow`
+
+**GitHub CLI:**
+```bash
+# Build + deploy latest commit
+gh workflow run deploy-web.yml
+
+# Redeploy existing :latest image without rebuilding (fast rollback)
+gh workflow run deploy-web.yml -f skip_build=true
+
+# Deploy a specific image tag
+gh workflow run deploy-web.yml -f image_tag=abc1234
+```
+
+### After first deploy
+
+1. Copy the HTTPS endpoint from the ECS console
+2. Update `NEXTAUTH_URL` in SSM Parameter Store: `/pos-payroll/NEXTAUTH_URL`
+3. Add the URL to Google Cloud Console OAuth redirect URIs
 
 ---
 
@@ -226,6 +272,7 @@ Push to `main` triggers an automatic deployment via GitHub Actions to AWS ECS.
 |---|---|---|
 | `ci.yml` | PR, push to main | Lint, type-check, unit tests |
 | `e2e.yml` | Push to main | Playwright E2E on web |
+| `deploy-web.yml` | **Manual only** | Build Docker image → push ECR → deploy ECS Express Mode |
 | `eas-build.yml` | Push to main | EAS production build + submit |
 | `eas-update.yml` | Push to staging | EAS OTA update to staging channel |
 
